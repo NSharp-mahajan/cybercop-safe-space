@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Shield, Zap } from "lucide-react";
+import { Menu, Shield, Zap, Scan, BookOpen, Trophy } from "lucide-react";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +12,9 @@ const Header = () => {
     { name: "Home", href: "/", icon: Shield },
     { name: "FIR Generator", href: "/fir-generator", icon: Zap },
     { name: "Password Check", href: "/password-checker", icon: Shield },
+    { name: "OCR Fraud Detect", href: "/ocr-fraud", icon: Scan },
+    { name: "Scam Library", href: "/scam-library", icon: BookOpen },
+    { name: "Law Learning", href: "/law-learning", icon: Trophy },
     { name: "Dashboard", href: "/dashboard", icon: Shield },
     { name: "Help", href: "/help", icon: Shield },
   ];

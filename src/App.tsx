@@ -7,6 +7,9 @@ import Layout from "./components/Layout/Layout";
 import Landing from "./pages/Landing";
 import FirGenerator from "./pages/FirGenerator";
 import PasswordChecker from "./pages/PasswordChecker";
+import OcrFraudDetection from "./pages/OcrFraudDetection";
+import ScamLibrary from "./pages/ScamLibrary";
+import LawLearning from "./pages/LawLearning";
 import Dashboard from "./pages/Dashboard";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
@@ -24,6 +27,9 @@ const App = () => (
             <Route index element={<Landing />} />
             <Route path="fir-generator" element={<FirGenerator />} />
             <Route path="password-checker" element={<PasswordChecker />} />
+            <Route path="ocr-fraud" element={<OcrFraudDetection />} />
+            <Route path="scam-library" element={<ScamLibrary />} />
+            <Route path="law-learning" element={<LawLearning />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="help" element={<Help />} />
           </Route>
