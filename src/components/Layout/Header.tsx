@@ -34,26 +34,27 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-3">
             {navigation.map((item) => (
               <Button
                 key={item.name}
                 variant={isActive(item.href) ? "default" : "ghost"}
                 asChild
-                className={`transition-glow ${
+                size="sm"
+                className={`px-4 py-2 transition-glow ${
                   isActive(item.href) ? "glow-primary" : "hover:glow-primary"
                 }`}
               >
                 <Link to={item.href} className="flex items-center space-x-2">
                   <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
+                  <span className="text-sm font-medium">{item.name}</span>
                 </Link>
               </Button>
             ))}
           </nav>
 
           {/* Mobile Navigation */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="transition-glow hover:glow-primary">
