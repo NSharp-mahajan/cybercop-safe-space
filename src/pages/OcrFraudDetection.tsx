@@ -1,229 +1,430 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, FileText, Scan, Upload, Shield, AlertCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { 
+  Scan, 
+  Upload, 
+  FileImage, 
+  AlertTriangle, 
+  CheckCircle, 
+  Eye,
+  Shield,
+  Loader2,
+  Download,
+  RefreshCw
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+interface FraudAnalysis {
+  extracted_text: string;
+  document_type: string;
+  fraud_risk: number;
+  fraud_indicators: string[];
+  recommendations: string[];
+  confidence: number;
+}
 
 const OcrFraudDetection = () => {
-  const [text, setText] = useState("");
-  const [analyzing, setAnalyzing] = useState(false);
-  const [results, setResults] = useState<any>(null);
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState<FraudAnalysis | null>(null);
 
-  const fraudPatterns = [
-    { pattern: "urgent", risk: "high", description: "Urgency tactics" },
-    { pattern: "limited time", risk: "high", description: "Time pressure" },
-    { pattern: "act now", risk: "medium", description: "Action pressure" },
-    { pattern: "congratulations", risk: "medium", description: "False rewards" },
-    { pattern: "winner", risk: "medium", description: "Fake prizes" },
-    { pattern: "click here", risk: "low", description: "Suspicious links" },
-  ];
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  const analyzeText = async () => {
-    setAnalyzing(true);
-    
-    // Simulate analysis
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const detectedPatterns = fraudPatterns.filter(pattern => 
-      text.toLowerCase().includes(pattern.pattern.toLowerCase())
-    );
-    
-    const riskScore = detectedPatterns.reduce((score, pattern) => {
-      return score + (pattern.risk === "high" ? 30 : pattern.risk === "medium" ? 20 : 10);
-    }, 0);
-    
-    setResults({
-      patterns: detectedPatterns,
-      riskScore: Math.min(riskScore, 100),
-      riskLevel: riskScore > 60 ? "high" : riskScore > 30 ? "medium" : "low"
-    });
-    
-    setAnalyzing(false);
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select an image file (JPG, PNG, etc.)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image smaller than 10MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+    setAnalysis(null);
+
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
   };
 
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case "high": return "text-destructive";
-      case "medium": return "text-warning";
-      default: return "text-success";
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const analyzeDocument = async () => {
+    if (!selectedFile) return;
+
+    setIsAnalyzing(true);
+    try {
+      // Convert file to base64
+      const base64Image = await convertToBase64(selectedFile);
+
+      // Call Supabase edge function
+      const { data, error } = await supabase.functions.invoke('ocr-fraud-detection', {
+        body: { image: base64Image }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Analysis failed');
+      }
+
+      setAnalysis(data.analysis);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Document fraud detection analysis completed successfully",
+      });
+
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : "Failed to analyze document",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
+  const getRiskColor = (risk: number) => {
+    if (risk <= 3) return "text-cyber-success";
+    if (risk <= 6) return "text-cyber-warning";
+    return "text-cyber-danger";
+  };
+
+  const getRiskLevel = (risk: number) => {
+    if (risk <= 3) return "Low Risk";
+    if (risk <= 6) return "Medium Risk";
+    return "High Risk";
+  };
+
+  const downloadReport = () => {
+    if (!analysis || !selectedFile) return;
+
+    const report = `
+CYBERCOP FRAUD DETECTION REPORT
+Generated: ${new Date().toLocaleString()}
+Document: ${selectedFile.name}
+
+ANALYSIS SUMMARY:
+Document Type: ${analysis.document_type}
+Fraud Risk Score: ${analysis.fraud_risk}/10 (${getRiskLevel(analysis.fraud_risk)})
+Confidence Level: ${analysis.confidence}/10
+
+EXTRACTED TEXT:
+${analysis.extracted_text}
+
+FRAUD INDICATORS:
+${analysis.fraud_indicators.map(indicator => `• ${indicator}`).join('\n')}
+
+RECOMMENDATIONS:
+${analysis.recommendations.map(rec => `• ${rec}`).join('\n')}
+
+---
+This report was generated by CyberCop AI-powered fraud detection system.
+For official investigations, please consult with cybersecurity professionals.
+`;
+
+    const blob = new Blob([report], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fraud_report_${selectedFile.name}_${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Report Downloaded",
+      description: "Fraud detection report has been saved",
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-cyber-grid">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="p-3 rounded-full bg-primary/10 border border-primary/20 glow-primary">
-                <Scan className="h-8 w-8 text-primary" />
-              </div>
+    <div className="min-h-screen py-12 px-4">
+      <div className="container mx-auto max-w-6xl">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-4">
+            <div className="p-4 rounded-full bg-primary/10 glow-primary">
+              <Scan className="h-12 w-12 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold gradient-primary bg-clip-text text-transparent mb-4">
-              OCR Fraud Detection
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Upload images or paste text to detect potential fraud patterns using advanced AI analysis
-            </p>
           </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <span className="gradient-primary bg-clip-text text-transparent">OCR + Fraud Detection</span>
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            AI-powered document analysis to detect fraudulent content and extract text
+          </p>
+        </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Input Section */}
-            <Card className="cyber-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-primary" />
-                  Text Analysis
-                </CardTitle>
-                <CardDescription>
-                  Paste suspicious text or upload an image for fraud detection
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
-                  <Button 
-                    variant="outline" 
-                    className="w-full h-32 border-dashed border-primary/20 hover:border-primary/40 transition-glow hover:glow-primary"
-                  >
-                    <div className="flex flex-col items-center gap-2">
-                      <Upload className="h-8 w-8 text-primary" />
-                      <span>Upload Image (OCR)</span>
-                      <span className="text-xs text-muted-foreground">JPG, PNG, PDF</span>
-                    </div>
-                  </Button>
-                  
-                  <div className="relative">
-                    <Textarea
-                      placeholder="Or paste suspicious text here for analysis..."
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      className="min-h-[150px] resize-none"
-                    />
-                  </div>
-                  
-                  <Button 
-                    onClick={analyzeText}
-                    disabled={!text.trim() || analyzing}
-                    className="w-full transition-glow hover:glow-primary"
-                  >
-                    {analyzing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
-                        Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="mr-2 h-4 w-4" />
-                        Analyze for Fraud
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Results Section */}
-            <Card className="cyber-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-primary" />
-                  Analysis Results
-                </CardTitle>
-                <CardDescription>
-                  Fraud detection results and risk assessment
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!results ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Scan className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Run analysis to see fraud detection results</p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Risk Score */}
-                    <div className="text-center">
-                      <div className={`text-3xl font-bold ${getRiskColor(results.riskLevel)}`}>
-                        {results.riskScore}%
-                      </div>
-                      <div className="text-sm text-muted-foreground">Fraud Risk Score</div>
-                      <Badge 
-                        variant={results.riskLevel === "high" ? "destructive" : results.riskLevel === "medium" ? "secondary" : "default"}
-                        className="mt-2"
-                      >
-                        {results.riskLevel.toUpperCase()} RISK
-                      </Badge>
-                    </div>
-
-                    {/* Detected Patterns */}
-                    {results.patterns.length > 0 && (
-                      <div>
-                        <h4 className="font-semibold mb-3 flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4" />
-                          Detected Fraud Patterns
-                        </h4>
-                        <div className="space-y-2">
-                          {results.patterns.map((pattern: any, index: number) => (
-                            <Alert key={index} className="py-2">
-                              <AlertDescription className="flex items-center justify-between">
-                                <span>"{pattern.pattern}" - {pattern.description}</span>
-                                <Badge 
-                                  variant={pattern.risk === "high" ? "destructive" : pattern.risk === "medium" ? "secondary" : "default"}
-                                  className="text-xs"
-                                >
-                                  {pattern.risk}
-                                </Badge>
-                              </AlertDescription>
-                            </Alert>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Recommendations */}
-                    <Alert>
-                      <Shield className="h-4 w-4" />
-                      <AlertDescription>
-                        {results.riskLevel === "high" 
-                          ? "⚠️ High fraud risk detected! Do not respond or click any links. Report to authorities."
-                          : results.riskLevel === "medium"
-                          ? "⚡ Moderate risk detected. Verify sender identity before taking any action."
-                          : "✅ Low risk detected, but always stay vigilant with unexpected messages."
-                        }
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Common Fraud Patterns */}
-          <Card className="cyber-card mt-8">
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Upload Section */}
+          <Card className="border-border/40">
             <CardHeader>
-              <CardTitle>Common Fraud Indicators</CardTitle>
-              <CardDescription>Learn to identify these suspicious patterns</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5 text-primary" />
+                Document Upload
+              </CardTitle>
+              <CardDescription>
+                Upload a document image for fraud detection analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* File Input */}
+              <div className="space-y-4">
+                <div 
+                  className="border-2 border-dashed border-border/40 rounded-lg p-8 text-center transition-all hover:border-primary/50 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {previewUrl ? (
+                    <div className="space-y-4">
+                      <img 
+                        src={previewUrl} 
+                        alt="Document preview" 
+                        className="max-h-48 mx-auto rounded-lg shadow-lg"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        {selectedFile?.name}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <FileImage className="h-16 w-16 mx-auto text-muted-foreground" />
+                      <div>
+                        <p className="text-lg font-medium">Click to upload document</p>
+                        <p className="text-sm text-muted-foreground">
+                          Supports JPG, PNG, GIF (max 10MB)
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                    className="flex-1 transition-glow hover:glow-primary"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    {selectedFile ? 'Change File' : 'Upload File'}
+                  </Button>
+                  {selectedFile && (
+                    <Button
+                      onClick={() => {
+                        setSelectedFile(null);
+                        setPreviewUrl("");
+                        setAnalysis(null);
+                      }}
+                      variant="outline"
+                      className="transition-glow hover:glow-accent"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Analyze Button */}
+              {selectedFile && (
+                <Button
+                  onClick={analyzeDocument}
+                  disabled={isAnalyzing}
+                  className="w-full glow-primary transition-glow"
+                  size="lg"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Analyzing Document...
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="mr-2 h-5 w-5" />
+                      Analyze for Fraud
+                    </>
+                  )}
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Results Section */}
+          <Card className="border-border/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Analysis Results
+              </CardTitle>
+              <CardDescription>
+                Fraud detection analysis and extracted content
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {fraudPatterns.map((pattern, index) => (
-                  <div key={index} className="p-3 rounded-lg border border-border/40 bg-card/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <code className="text-sm bg-muted px-2 py-1 rounded">"{pattern.pattern}"</code>
+              {!analysis && !isAnalyzing && (
+                <div className="text-center py-12">
+                  <Scan className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">
+                    Upload a document to begin fraud detection analysis
+                  </p>
+                </div>
+              )}
+
+              {isAnalyzing && (
+                <div className="text-center py-12">
+                  <Loader2 className="h-16 w-16 mx-auto text-primary animate-spin mb-4" />
+                  <p className="text-primary font-medium">
+                    Analyzing document for fraud indicators...
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    This may take a few moments
+                  </p>
+                </div>
+              )}
+
+              {analysis && (
+                <div className="space-y-6">
+                  {/* Risk Assessment */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold">Fraud Risk Assessment</h3>
                       <Badge 
-                        variant={pattern.risk === "high" ? "destructive" : pattern.risk === "medium" ? "secondary" : "default"}
-                        className="text-xs"
+                        variant="secondary" 
+                        className={`${getRiskColor(analysis.fraud_risk)} glow-primary`}
                       >
-                        {pattern.risk}
+                        {getRiskLevel(analysis.fraud_risk)}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{pattern.description}</p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Risk Score</span>
+                        <span className={getRiskColor(analysis.fraud_risk)}>
+                          {analysis.fraud_risk}/10
+                        </span>
+                      </div>
+                      <Progress 
+                        value={analysis.fraud_risk * 10} 
+                        className="h-3"
+                      />
+                    </div>
+
+                    <div className="flex justify-between text-sm">
+                      <span>Confidence Level</span>
+                      <span className="text-primary">{analysis.confidence}/10</span>
+                    </div>
                   </div>
-                ))}
-              </div>
+
+                  {/* Document Info */}
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">Document Information</h3>
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Type:</strong> {analysis.document_type}
+                    </p>
+                  </div>
+
+                  {/* Fraud Indicators */}
+                  {analysis.fraud_indicators.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-cyber-warning" />
+                        Fraud Indicators
+                      </h3>
+                      <div className="space-y-2">
+                        {analysis.fraud_indicators.map((indicator, index) => (
+                          <Alert key={index} className="border-cyber-warning/20">
+                            <AlertTriangle className="h-4 w-4 text-cyber-warning" />
+                            <AlertDescription className="text-sm">
+                              {indicator}
+                            </AlertDescription>
+                          </Alert>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recommendations */}
+                  {analysis.recommendations.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="font-semibold flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-cyber-success" />
+                        Recommendations
+                      </h3>
+                      <div className="space-y-2">
+                        {analysis.recommendations.map((rec, index) => (
+                          <div key={index} className="flex items-start gap-2 text-sm">
+                            <CheckCircle className="h-4 w-4 text-cyber-success mt-0.5 shrink-0" />
+                            <span>{rec}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Extracted Text */}
+                  {analysis.extracted_text && (
+                    <div className="space-y-2">
+                      <h3 className="font-semibold">Extracted Text</h3>
+                      <div className="p-3 rounded-lg bg-muted/30 text-sm">
+                        <pre className="whitespace-pre-wrap font-mono text-xs">
+                          {analysis.extracted_text}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Download Report */}
+                  <Button
+                    onClick={downloadReport}
+                    variant="outline"
+                    className="w-full transition-glow hover:glow-accent"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Detailed Report
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
