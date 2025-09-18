@@ -14,7 +14,431 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          alert_type: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          priority: number | null
+          target_audience: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alert_type?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          target_audience?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alert_type?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          target_audience?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fir_submissions: {
+        Row: {
+          case_type: string
+          complainant_email: string | null
+          complainant_name: string
+          complainant_phone: string
+          created_at: string
+          fir_number: string | null
+          id: string
+          incident_date: string
+          incident_description: string
+          incident_location: string
+          metadata: Json | null
+          priority: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          case_type: string
+          complainant_email?: string | null
+          complainant_name: string
+          complainant_phone: string
+          created_at?: string
+          fir_number?: string | null
+          id?: string
+          incident_date: string
+          incident_description: string
+          incident_location: string
+          metadata?: Json | null
+          priority?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          case_type?: string
+          complainant_email?: string | null
+          complainant_name?: string
+          complainant_phone?: string
+          created_at?: string
+          fir_number?: string | null
+          id?: string
+          incident_date?: string
+          incident_description?: string
+          incident_location?: string
+          metadata?: Json | null
+          priority?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      help_queries: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          priority: string | null
+          query_text: string
+          responded_at: string | null
+          responded_by: string | null
+          response: string | null
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          priority?: string | null
+          query_text: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          priority?: string | null
+          query_text?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      law_modules: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          description: string | null
+          difficulty_level: string | null
+          estimated_duration: number | null
+          id: string
+          is_published: boolean | null
+          learning_objectives: string[] | null
+          order_index: number | null
+          prerequisites: string[] | null
+          quiz_questions: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_duration?: number | null
+          id?: string
+          is_published?: boolean | null
+          learning_objectives?: string[] | null
+          order_index?: number | null
+          prerequisites?: string[] | null
+          quiz_questions?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string | null
+          estimated_duration?: number | null
+          id?: string
+          is_published?: boolean | null
+          learning_objectives?: string[] | null
+          order_index?: number | null
+          prerequisites?: string[] | null
+          quiz_questions?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      password_checks: {
+        Row: {
+          common_password: boolean | null
+          created_at: string
+          has_lowercase: boolean | null
+          has_numbers: boolean | null
+          has_symbols: boolean | null
+          has_uppercase: boolean | null
+          id: string
+          length: number
+          password_hash: string
+          strength_score: number
+          suggestions: string[] | null
+          user_id: string | null
+        }
+        Insert: {
+          common_password?: boolean | null
+          created_at?: string
+          has_lowercase?: boolean | null
+          has_numbers?: boolean | null
+          has_symbols?: boolean | null
+          has_uppercase?: boolean | null
+          id?: string
+          length: number
+          password_hash: string
+          strength_score: number
+          suggestions?: string[] | null
+          user_id?: string | null
+        }
+        Update: {
+          common_password?: boolean | null
+          created_at?: string
+          has_lowercase?: boolean | null
+          has_numbers?: boolean | null
+          has_symbols?: boolean | null
+          has_uppercase?: boolean | null
+          id?: string
+          length?: number
+          password_hash?: string
+          strength_score?: number
+          suggestions?: string[] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scam_library: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_trending: boolean | null
+          prevention_tips: string[] | null
+          real_examples: string[] | null
+          reported_count: number | null
+          risk_level: string | null
+          source_url: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          warning_signs: string[] | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          image_url?: string | null
+          is_trending?: boolean | null
+          prevention_tips?: string[] | null
+          real_examples?: string[] | null
+          reported_count?: number | null
+          risk_level?: string | null
+          source_url?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          warning_signs?: string[] | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_trending?: boolean | null
+          prevention_tips?: string[] | null
+          real_examples?: string[] | null
+          reported_count?: number | null
+          risk_level?: string | null
+          source_url?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          warning_signs?: string[] | null
+        }
+        Relationships: []
+      }
+      scanned_documents: {
+        Row: {
+          analysis_status: string | null
+          confidence_level: number | null
+          created_at: string
+          document_type: string | null
+          extracted_text: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string | null
+          fraud_indicators: string[] | null
+          fraud_risk_score: number | null
+          id: string
+          metadata: Json | null
+          recommendations: string[] | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          analysis_status?: string | null
+          confidence_level?: number | null
+          created_at?: string
+          document_type?: string | null
+          extracted_text?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          fraud_indicators?: string[] | null
+          fraud_risk_score?: number | null
+          id?: string
+          metadata?: Json | null
+          recommendations?: string[] | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          analysis_status?: string | null
+          confidence_level?: number | null
+          created_at?: string
+          document_type?: string | null
+          extracted_text?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
+          fraud_indicators?: string[] | null
+          fraud_risk_score?: number | null
+          id?: string
+          metadata?: Json | null
+          recommendations?: string[] | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          module_id: string
+          progress_percentage: number | null
+          quiz_score: number | null
+          status: string | null
+          time_spent: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          module_id: string
+          progress_percentage?: number | null
+          quiz_score?: number | null
+          status?: string | null
+          time_spent?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          module_id?: string
+          progress_percentage?: number | null
+          quiz_score?: number | null
+          status?: string | null
+          time_spent?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "law_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
