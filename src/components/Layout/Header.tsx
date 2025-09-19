@@ -2,7 +2,20 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Shield, Zap, Scan, BookOpen, Trophy } from "lucide-react";
+import { 
+  Menu, 
+  Shield, 
+  FileText, 
+  Lock, 
+  Bot, 
+  ScanText, 
+  BookOpen, 
+  BarChart3, 
+  HelpCircle,
+  MessageCircle,
+  AlertTriangle
+} from "lucide-react";
+import UrlChecker from "@/components/UrlChecker";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,13 +23,15 @@ const Header = () => {
 
   const navigation = [
     { name: "Home", href: "/", icon: Shield },
-    { name: "FIR Generator", href: "/fir-generator", icon: Zap },
-    { name: "Password Check", href: "/password-checker", icon: Shield },
-    { name: "OCR Fraud Detect", href: "/ocr-fraud", icon: Scan },
+    { name: "FIR Generator", href: "/fir-generator", icon: FileText },
+    { name: "Password Check", href: "/password-checker", icon: Lock },
+    { name: "OCR Fraud Detect", href: "/ocr-fraud", icon: ScanText },
     { name: "Scam Library", href: "/scam-library", icon: BookOpen },
-    { name: "Law Learning", href: "/law-learning", icon: Trophy },
-    { name: "Dashboard", href: "/dashboard", icon: Shield },
-    { name: "Help", href: "/help", icon: Shield },
+    { name: "Law Learning", href: "/law-learning", icon: BookOpen },
+    { name: "Chat AI", href: "/chat", icon: MessageCircle },
+    { name: "Report Scam", href: "/report-scam", icon: AlertTriangle },
+    { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
+    { name: "Help", href: "/help", icon: HelpCircle },
   ];
 
   const isActive = (href: string) => location.pathname === href;
@@ -34,24 +49,27 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-3">
-            {navigation.map((item) => (
-              <Button
-                key={item.name}
-                variant={isActive(item.href) ? "default" : "ghost"}
-                asChild
-                size="sm"
-                className={`px-4 py-2 transition-glow ${
-                  isActive(item.href) ? "glow-primary" : "hover:glow-primary"
-                }`}
-              >
-                <Link to={item.href} className="flex items-center space-x-2">
-                  <item.icon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{item.name}</span>
-                </Link>
-              </Button>
-            ))}
-          </nav>
+          <div className="hidden lg:flex items-center space-x-4">
+            <UrlChecker showInput={false} size="sm" />
+            <nav className="flex items-center space-x-3">
+              {navigation.map((item) => (
+                <Button
+                  key={item.name}
+                  variant={isActive(item.href) ? "default" : "ghost"}
+                  asChild
+                  size="sm"
+                  className={`px-4 py-2 transition-glow ${
+                    isActive(item.href) ? "glow-primary" : "hover:glow-primary"
+                  }`}
+                >
+                  <Link to={item.href} className="flex items-center space-x-2">
+                    <item.icon className="h-4 w-4" />
+                    <span className="text-sm font-medium">{item.name}</span>
+                  </Link>
+                </Button>
+              ))}
+            </nav>
+          </div>
 
           {/* Mobile Navigation */}
           <div className="lg:hidden">

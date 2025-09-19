@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle,
 } from "lucide-react";
+import QuickScamReport from "@/components/QuickScamReport";
 
 const Landing = () => {
   const features = [
@@ -39,7 +40,8 @@ const Landing = () => {
       icon: Bot,
       title: "AI Chatbot Assistant",
       description: "24/7 AI-powered cybersecurity guidance and support",
-      status: "Coming Soon",
+      status: "Available",
+      href: "/chat",
     },
     {
       icon: Map,
@@ -51,7 +53,8 @@ const Landing = () => {
       icon: Eye,
       title: "OCR + Fraud Detection",
       description: "Scan and analyze documents for fraudulent content",
-      status: "Coming Soon",
+      status: "Available",
+      href: "/ocr-fraud",
     },
     {
       icon: GraduationCap,
@@ -75,7 +78,8 @@ const Landing = () => {
       icon: BookOpen,
       title: "Scam Awareness Library",
       description: "Comprehensive database of known scam patterns and prevention",
-      status: "Coming Soon",
+      status: "Available",
+      href: "/scam-library",
     },
     {
       icon: Users,
@@ -202,6 +206,11 @@ const Landing = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          {/* Quick Scam Report Widget */}
+          <div className="mt-16 max-w-2xl mx-auto">
+            <QuickScamReport />
           </div>
         </div>
       </section>

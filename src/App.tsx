@@ -12,7 +12,10 @@ import ScamLibrary from "./pages/ScamLibrary";
 import LawLearning from "./pages/LawLearning";
 import Dashboard from "./pages/Dashboard";
 import Help from "./pages/Help";
+import Chat from "./pages/Chat";
+import ReportScam from "./pages/ReportScam";
 import NotFound from "./pages/NotFound";
+import ChatWidget from "./components/ChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -31,11 +34,14 @@ const App = () => (
             <Route path="scam-library" element={<ScamLibrary />} />
             <Route path="law-learning" element={<LawLearning />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="report-scam" element={<ReportScam />} />
             <Route path="help" element={<Help />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <ChatWidget />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
