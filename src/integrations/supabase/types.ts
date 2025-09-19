@@ -56,6 +56,65 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          chat_id: string
+          created_at: string
+          id: string
+          message: string
+          role: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          id?: string
+          message: string
+          role: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chats: {
+        Row: {
+          anonymous_session: string | null
+          created_at: string
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          anonymous_session?: string | null
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          anonymous_session?: string | null
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       fir_submissions: {
         Row: {
           case_type: string
@@ -335,6 +394,92 @@ export type Database = {
         }
         Relationships: []
       }
+      scam_reports: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          downvotes: number | null
+          evidence_file_url: string | null
+          id: string
+          location: string | null
+          reporter_name: string | null
+          reporter_user_id: string | null
+          status: string
+          title: string
+          updated_at: string
+          upvotes: number | null
+          url: string
+          url_hash: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          downvotes?: number | null
+          evidence_file_url?: string | null
+          id?: string
+          location?: string | null
+          reporter_name?: string | null
+          reporter_user_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          upvotes?: number | null
+          url: string
+          url_hash: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          downvotes?: number | null
+          evidence_file_url?: string | null
+          id?: string
+          location?: string | null
+          reporter_name?: string | null
+          reporter_user_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          upvotes?: number | null
+          url?: string
+          url_hash?: string
+        }
+        Relationships: []
+      }
+      scam_votes: {
+        Row: {
+          created_at: string
+          id: string
+          scam_report_id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          scam_report_id: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          scam_report_id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scam_votes_scam_report_id_fkey"
+            columns: ["scam_report_id"]
+            isOneToOne: false
+            referencedRelation: "scam_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scanned_documents: {
         Row: {
           analysis_status: string | null
@@ -388,6 +533,36 @@ export type Database = {
           metadata?: Json | null
           recommendations?: string[] | null
           updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      url_checks: {
+        Row: {
+          checked_at: string
+          id: string
+          ip_address: unknown | null
+          status: string
+          url: string
+          url_hash: string
+          user_id: string | null
+        }
+        Insert: {
+          checked_at?: string
+          id?: string
+          ip_address?: unknown | null
+          status: string
+          url: string
+          url_hash: string
+          user_id?: string | null
+        }
+        Update: {
+          checked_at?: string
+          id?: string
+          ip_address?: unknown | null
+          status?: string
+          url?: string
+          url_hash?: string
           user_id?: string | null
         }
         Relationships: []
