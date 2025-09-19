@@ -1,10 +1,17 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Initialize Supabase client
+const supabase = createClient(
+  Deno.env.get('SUPABASE_URL') ?? '',
+  Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+);
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -13,13 +20,13 @@ serve(async (req) => {
   }
 
   try {
-    const { image } = await req.json();
+    const { image, fileName, fileSize, fileType, userId } = await req.json();
     
     if (!image) {
       throw new Error('No image data provided');
     }
 
-    console.log('Processing OCR fraud detection request');
+    console.log('Processing OCR fraud detection request for file:', fileName);
 
     // Call OpenAI Vision API to analyze the document
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -97,9 +104,34 @@ Provide a detailed analysis in JSON format with:
 
     console.log('OCR fraud detection completed successfully');
 
+    // Save to database
+    const { data: savedDoc, error: dbError } = await supabase
+      .from('scanned_documents')
+      .insert({
+        user_id: userId || null,
+        file_name: fileName || 'unknown',
+        file_size: fileSize || null,
+        file_type: fileType || null,
+        extracted_text: analysisResult.extracted_text,
+        document_type: analysisResult.document_type,
+        fraud_risk_score: analysisResult.fraud_risk,
+        fraud_indicators: analysisResult.fraud_indicators,
+        recommendations: analysisResult.recommendations,
+        confidence_level: analysisResult.confidence,
+        analysis_status: 'completed'
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Database error:', dbError);
+      // Continue without failing the request
+    }
+
     return new Response(JSON.stringify({
       success: true,
       analysis: analysisResult,
+      document_id: savedDoc?.id,
       processed_at: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

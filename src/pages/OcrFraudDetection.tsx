@@ -87,7 +87,13 @@ const OcrFraudDetection = () => {
 
       // Call Supabase edge function
       const { data, error } = await supabase.functions.invoke('ocr-fraud-detection', {
-        body: { image: base64Image }
+        body: { 
+          image: base64Image,
+          fileName: selectedFile.name,
+          fileSize: selectedFile.size,
+          fileType: selectedFile.type,
+          userId: null // Will be set when authentication is added
+        }
       });
 
       if (error) {
