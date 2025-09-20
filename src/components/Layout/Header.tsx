@@ -13,7 +13,8 @@ import {
   BarChart3, 
   HelpCircle,
   MessageCircle,
-  AlertTriangle
+  AlertTriangle,
+  Users
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
 
@@ -27,6 +28,7 @@ const Header = () => {
     { name: "Password Check", href: "/password-checker", icon: Lock },
     { name: "OCR Fraud Detect", href: "/ocr-fraud", icon: ScanText },
     { name: "Scam Library", href: "/scam-library", icon: BookOpen },
+    { name: "Community Reports", href: "/community-reports", icon: Users },
     { name: "Law Learning", href: "/law-learning", icon: BookOpen },
     { name: "Chat AI", href: "/chat", icon: MessageCircle },
     { name: "Report Scam", href: "/report-scam", icon: AlertTriangle },

@@ -12,6 +12,7 @@ import ScamLibrary from "./pages/ScamLibrary";
 import LawLearning from "./pages/LawLearning";
 import Dashboard from "./pages/Dashboard";
 import Help from "./pages/Help";
+import CommunityReports from "./pages/CommunityReports";
 import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="chat" element={<Chat />} />
             <Route path="report-scam" element={<ReportScam />} />
+            <Route path="community-reports" element={<CommunityReports />} />
             <Route path="help" element={<Help />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
