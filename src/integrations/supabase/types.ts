@@ -115,6 +115,72 @@ export type Database = {
         }
         Relationships: []
       }
+      fir_reports: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          name: string
+          address: string
+          contact: string
+          incident_date: string
+          incident_location: string
+          incident_description: string
+          language: string
+          status: string
+          evidence_files: string[] | null
+          additional_notes: string | null
+          user_id: string | null
+          anonymous_session: string | null
+          assigned_officer: string | null
+          fir_number: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name: string
+          address: string
+          contact: string
+          incident_date: string
+          incident_location: string
+          incident_description: string
+          language?: string
+          status?: string
+          evidence_files?: string[] | null
+          additional_notes?: string | null
+          user_id?: string | null
+          anonymous_session?: string | null
+          assigned_officer?: string | null
+          fir_number?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name?: string
+          address?: string
+          contact?: string
+          incident_date?: string
+          incident_location?: string
+          incident_description?: string
+          language?: string
+          status?: string
+          evidence_files?: string[] | null
+          additional_notes?: string | null
+          user_id?: string | null
+          anonymous_session?: string | null
+          assigned_officer?: string | null
+          fir_number?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: []
+      }
       fir_submissions: {
         Row: {
           case_type: string

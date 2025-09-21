@@ -23,7 +23,8 @@ import {
   MessageCircle,
   AlertTriangle,
   Users,
-  Search
+  Search,
+  Home
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
 
@@ -72,6 +73,18 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-6">
+            {/* Home Link */}
+            <Button
+              variant={isActive("/") ? "ghost" : "ghost"}
+              asChild
+              className="transition-all hover:scale-105"
+            >
+              <Link to="/" className="flex items-center space-x-2">
+                <Home className="h-4 w-4" />
+                <span className="text-sm font-medium">Home</span>
+              </Link>
+            </Button>
+
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
@@ -184,6 +197,21 @@ const Header = () => {
                 <div className="flex flex-col space-y-1 mt-8">
                   <div className="mb-4">
                     <UrlChecker showInput={true} size="sm" />
+                  </div>
+                  
+                  {/* Home Link for Mobile */}
+                  <div className="mb-4">
+                    <Button
+                      variant={isActive("/") ? "default" : "ghost"}
+                      asChild
+                      className="w-full justify-start"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Link to="/" className="flex items-center space-x-2">
+                        <Home className="h-4 w-4" />
+                        <span className="text-sm">Home</span>
+                      </Link>
+                    </Button>
                   </div>
                   
                   <div className="space-y-4">
