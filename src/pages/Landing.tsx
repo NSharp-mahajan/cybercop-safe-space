@@ -19,6 +19,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import QuickScamReport from "@/components/QuickScamReport";
+import Robot from "@/components/Robot";
 
 const Landing = () => {
   const features = [
@@ -101,38 +102,59 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden py-24 px-4">
         <div className="absolute inset-0 gradient-dark opacity-80" />
-        <div className="relative container mx-auto text-center">
-          <div className="mb-8 flex justify-center">
-            <Badge variant="secondary" className="px-4 py-2 text-sm glow-primary">
-              <Zap className="mr-2 h-4 w-4" />
-              India's Premier Cybersecurity Platform
-            </Badge>
-          </div>
-          
-          <h1 className="mb-6 text-5xl md:text-7xl font-bold leading-tight">
-            <span className="gradient-primary bg-clip-text text-transparent">CyberCop</span>
-            <br />
-            <span className="text-foreground">Your Digital Guardian</span>
-          </h1>
-          
-          <p className="mb-8 text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Complete cybersecurity protection suite with AI-powered threat detection, 
-            incident reporting, and community-driven security solutions.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="glow-primary transition-glow">
-              <Link to="/fir-generator">
-                <FileText className="mr-2 h-5 w-5" />
-                Generate FIR
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild className="transition-glow hover:glow-accent">
-              <Link to="/dashboard">
-                <Shield className="mr-2 h-5 w-5" />
-                Security Dashboard
-              </Link>
-            </Button>
+        <div className="relative container mx-auto">
+          <div className="grid lg:grid-cols-[1.4fr_0.6fr] gap-3 lg:gap-4 items-center">
+            {/* Left Column - Text Content */}
+            <div className="text-center lg:text-left">
+              <div className="mb-8 flex justify-center lg:justify-start">
+                <Badge variant="secondary" className="px-4 py-2 text-sm glow-primary">
+                  <Zap className="mr-2 h-4 w-4" />
+                  India's Premier Cybersecurity Platform
+                </Badge>
+              </div>
+              
+              <h1 className="mb-6 text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="gradient-primary bg-clip-text text-transparent">CyberCop</span>
+                <br />
+                <span className="text-foreground">Your Digital Guardian</span>
+              </h1>
+              
+              <p className="mb-8 text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
+                Complete cybersecurity protection suite with AI-powered threat detection, 
+                incident reporting, and community-driven security solutions.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Button size="lg" asChild className="glow-primary transition-glow">
+                  <Link to="/fir-generator">
+                    <FileText className="mr-2 h-5 w-5" />
+                    Generate FIR
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild className="transition-glow hover:glow-accent">
+                  <Link to="/dashboard">
+                    <Shield className="mr-2 h-5 w-5" />
+                    Security Dashboard
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Column - Robot Animation */}
+            <div className="flex justify-center lg:justify-end lg:mr-8 xl:mr-12">
+              <div className="relative robot-container">
+                {/* Glowing background effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur-3xl transform scale-150 robot-pulse-bg" />
+                <Robot 
+                  size="large" 
+                  className="relative z-10 drop-shadow-2xl hover:scale-105 transition-transform duration-300" 
+                />
+                {/* Floating elements around robot */}
+                <div className="absolute top-8 right-8 w-6 h-6 bg-primary/30 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />
+                <div className="absolute bottom-12 left-8 w-4 h-4 bg-blue-500/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-20 left-4 w-3 h-3 bg-accent/30 rounded-full animate-bounce" style={{ animationDelay: '1.5s' }} />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -160,6 +182,9 @@ const Landing = () => {
       <section className="py-24 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-16">
+            <div className="flex justify-center mb-6">
+              {/* <Robot size="small" className="opacity-60" /> */}
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Comprehensive <span className="gradient-primary bg-clip-text text-transparent">Security Suite</span>
             </h2>
@@ -169,7 +194,7 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <Card key={index} className="group transition-all duration-300 hover:glow-primary border-border/40">
                 <CardHeader>
@@ -206,7 +231,7 @@ const Landing = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </div> */}
 
           {/* Quick Scam Report Widget */}
           <div className="mt-16 max-w-2xl mx-auto">

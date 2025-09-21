@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,33 @@ const OcrFraudDetection = () => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<FraudAnalysis | null>(null);
+
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Add error recovery - if something goes wrong, reset state
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error caught:', event.error);
+      if (isAnalyzing) {
+        setIsAnalyzing(false);
+        toast({
+          title: "Unexpected Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, [isAnalyzing, toast]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -78,14 +105,26 @@ const OcrFraudDetection = () => {
   };
 
   const analyzeDocument = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      toast({
+        title: "No File Selected",
+        description: "Please select a document to analyze",
+        variant: "destructive"
+      });
+      return;
+    }
 
     setIsAnalyzing(true);
+    setAnalysis(null); // Clear previous results
+    
     try {
+      console.log('Starting document analysis for:', selectedFile.name);
+      
       // Convert file to base64
       const base64Image = await convertToBase64(selectedFile);
+      console.log('File converted to base64, length:', base64Image.length);
 
-      // Call Supabase edge function
+      // Call Supabase edge function with better error handling
       const { data, error } = await supabase.functions.invoke('ocr-fraud-detection', {
         body: { 
           image: base64Image,
@@ -96,14 +135,32 @@ const OcrFraudDetection = () => {
         }
       });
 
+      console.log('Supabase function response:', { data, error });
+
+      // Handle Supabase function errors
       if (error) {
-        throw new Error(error.message);
+        console.error('Supabase function error:', error);
+        throw new Error(`Function error: ${error.message || 'Unknown error'}`);
       }
 
+      // Check if we got a response
+      if (!data) {
+        throw new Error('No response from analysis service');
+      }
+
+      // Handle application-level errors
       if (!data.success) {
-        throw new Error(data.error || 'Analysis failed');
+        const errorMsg = data.error || 'Analysis failed for unknown reason';
+        console.error('Analysis failed:', errorMsg);
+        throw new Error(errorMsg);
       }
 
+      // Validate analysis data
+      if (!data.analysis) {
+        throw new Error('Analysis completed but no results returned');
+      }
+
+      console.log('Analysis successful:', data.analysis);
       setAnalysis(data.analysis);
       
       toast({
@@ -113,11 +170,30 @@ const OcrFraudDetection = () => {
 
     } catch (error) {
       console.error('Analysis error:', error);
+      
+      // Reset analysis state on error
+      setAnalysis(null);
+      
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "An unexpected error occurred during analysis";
+      
       toast({
         title: "Analysis Failed",
-        description: error instanceof Error ? error.message : "Failed to analyze document",
+        description: errorMessage,
         variant: "destructive"
       });
+      
+      // Additional debugging info
+      if (error instanceof Error && error.message.includes('Function error')) {
+        toast({
+          title: "Service Unavailable",
+          description: "The document analysis service is temporarily unavailable. Please try again later.",
+          variant: "destructive"
+        });
+      }
+      
     } finally {
       setIsAnalyzing(false);
     }
@@ -136,46 +212,67 @@ const OcrFraudDetection = () => {
   };
 
   const downloadReport = () => {
-    if (!analysis || !selectedFile) return;
+    if (!analysis || !selectedFile) {
+      toast({
+        title: "Cannot Download Report",
+        description: "No analysis results available to download",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    const report = `
+    try {
+      const report = `
 CYBERCOP FRAUD DETECTION REPORT
 Generated: ${new Date().toLocaleString()}
 Document: ${selectedFile.name}
 
 ANALYSIS SUMMARY:
-Document Type: ${analysis.document_type}
-Fraud Risk Score: ${analysis.fraud_risk}/10 (${getRiskLevel(analysis.fraud_risk)})
-Confidence Level: ${analysis.confidence}/10
+Document Type: ${analysis.document_type || 'Unknown'}
+Fraud Risk Score: ${analysis.fraud_risk || 0}/10 (${getRiskLevel(analysis.fraud_risk || 0)})
+Confidence Level: ${analysis.confidence || 0}/10
 
 EXTRACTED TEXT:
-${analysis.extracted_text}
+${analysis.extracted_text || 'No text extracted'}
 
 FRAUD INDICATORS:
-${analysis.fraud_indicators.map(indicator => `• ${indicator}`).join('\n')}
+${Array.isArray(analysis.fraud_indicators) 
+  ? analysis.fraud_indicators.map(indicator => `• ${indicator || 'N/A'}`).join('\n')
+  : '• No fraud indicators detected'}
 
 RECOMMENDATIONS:
-${analysis.recommendations.map(rec => `• ${rec}`).join('\n')}
+${Array.isArray(analysis.recommendations) 
+  ? analysis.recommendations.map(rec => `• ${rec || 'N/A'}`).join('\n')
+  : '• No specific recommendations available'}
 
 ---
 This report was generated by CyberCop AI-powered fraud detection system.
 For official investigations, please consult with cybersecurity professionals.
 `;
 
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `fraud_report_${selectedFile.name}_${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const blob = new Blob([report], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `fraud_report_${selectedFile.name}_${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-    toast({
-      title: "Report Downloaded",
-      description: "Fraud detection report has been saved",
-    });
+      toast({
+        title: "Report Downloaded",
+        description: "Fraud detection report has been saved",
+      });
+      
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      toast({
+        title: "Download Failed",
+        description: "Failed to generate the report file",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -259,12 +356,23 @@ For official investigations, please consult with cybersecurity professionals.
                   {selectedFile && (
                     <Button
                       onClick={() => {
+                        // Clean up preview URL to prevent memory leaks
+                        if (previewUrl) {
+                          URL.revokeObjectURL(previewUrl);
+                        }
+                        // Reset file input
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
+                        // Reset all state
                         setSelectedFile(null);
                         setPreviewUrl("");
                         setAnalysis(null);
+                        setIsAnalyzing(false);
                       }}
                       variant="outline"
                       className="transition-glow hover:glow-accent"
+                      title="Clear selected file"
                     >
                       <RefreshCw className="h-4 w-4" />
                     </Button>
@@ -337,28 +445,28 @@ For official investigations, please consult with cybersecurity professionals.
                       <h3 className="font-semibold">Fraud Risk Assessment</h3>
                       <Badge 
                         variant="secondary" 
-                        className={`${getRiskColor(analysis.fraud_risk)} glow-primary`}
+                        className={`${getRiskColor(analysis.fraud_risk || 0)} glow-primary`}
                       >
-                        {getRiskLevel(analysis.fraud_risk)}
+                        {getRiskLevel(analysis.fraud_risk || 0)}
                       </Badge>
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Risk Score</span>
-                        <span className={getRiskColor(analysis.fraud_risk)}>
-                          {analysis.fraud_risk}/10
+                        <span className={getRiskColor(analysis.fraud_risk || 0)}>
+                          {analysis.fraud_risk || 0}/10
                         </span>
                       </div>
                       <Progress 
-                        value={analysis.fraud_risk * 10} 
+                        value={(analysis.fraud_risk || 0) * 10} 
                         className="h-3"
                       />
                     </div>
 
                     <div className="flex justify-between text-sm">
                       <span>Confidence Level</span>
-                      <span className="text-primary">{analysis.confidence}/10</span>
+                      <span className="text-primary">{analysis.confidence || 0}/10</span>
                     </div>
                   </div>
 
@@ -366,12 +474,12 @@ For official investigations, please consult with cybersecurity professionals.
                   <div className="space-y-2">
                     <h3 className="font-semibold">Document Information</h3>
                     <p className="text-sm text-muted-foreground">
-                      <strong>Type:</strong> {analysis.document_type}
+                      <strong>Type:</strong> {analysis.document_type || 'Unknown'}
                     </p>
                   </div>
 
                   {/* Fraud Indicators */}
-                  {analysis.fraud_indicators.length > 0 && (
+                  {Array.isArray(analysis.fraud_indicators) && analysis.fraud_indicators.length > 0 && (
                     <div className="space-y-3">
                       <h3 className="font-semibold flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4 text-cyber-warning" />
@@ -382,7 +490,7 @@ For official investigations, please consult with cybersecurity professionals.
                           <Alert key={index} className="border-cyber-warning/20">
                             <AlertTriangle className="h-4 w-4 text-cyber-warning" />
                             <AlertDescription className="text-sm">
-                              {indicator}
+                              {indicator || 'No description available'}
                             </AlertDescription>
                           </Alert>
                         ))}
@@ -391,7 +499,7 @@ For official investigations, please consult with cybersecurity professionals.
                   )}
 
                   {/* Recommendations */}
-                  {analysis.recommendations.length > 0 && (
+                  {Array.isArray(analysis.recommendations) && analysis.recommendations.length > 0 && (
                     <div className="space-y-3">
                       <h3 className="font-semibold flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-cyber-success" />
@@ -401,7 +509,7 @@ For official investigations, please consult with cybersecurity professionals.
                         {analysis.recommendations.map((rec, index) => (
                           <div key={index} className="flex items-start gap-2 text-sm">
                             <CheckCircle className="h-4 w-4 text-cyber-success mt-0.5 shrink-0" />
-                            <span>{rec}</span>
+                            <span>{rec || 'No recommendation available'}</span>
                           </div>
                         ))}
                       </div>
@@ -416,6 +524,16 @@ For official investigations, please consult with cybersecurity professionals.
                         <pre className="whitespace-pre-wrap font-mono text-xs">
                           {analysis.extracted_text}
                         </pre>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show message if no text was extracted */}
+                  {!analysis.extracted_text && (
+                    <div className="space-y-2">
+                      <h3 className="font-semibold">Extracted Text</h3>
+                      <div className="p-3 rounded-lg bg-muted/30 text-sm text-muted-foreground">
+                        No text could be extracted from this document.
                       </div>
                     </div>
                   )}
