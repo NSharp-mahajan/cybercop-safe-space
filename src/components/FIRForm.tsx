@@ -4,6 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { firService } from "@/services/firService";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, CheckCircle } from "lucide-react";
 
 interface FormData {
   name: string;
@@ -22,6 +26,9 @@ interface FIRFormProps {
 }
 
 function FIRForm({ formData, onFormDataChange, onGenerate }: FIRFormProps) {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -34,9 +41,55 @@ function FIRForm({ formData, onFormDataChange, onGenerate }: FIRFormProps) {
     onFormDataChange(updatedFormData);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onGenerate(formData);
+    
+    // Validate required fields
+    if (!formData.name || !formData.address || !formData.contact || 
+        !formData.date || !formData.location || !formData.incident) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Submit to database
+      const result = await firService.submitFIR(formData, user?.id);
+
+      if (result.success) {
+        setIsSubmitted(true);
+        toast({
+          title: "FIR Submitted Successfully!",
+          description: `Your FIR has been submitted with reference number: ${result.firNumber}`,
+        });
+        
+        // Also generate the preview
+        onGenerate(formData);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: result.error || "Failed to submit FIR. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting FIR:', error);
+      toast({
+        title: "Submission Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -157,8 +210,23 @@ function FIRForm({ formData, onFormDataChange, onGenerate }: FIRFormProps) {
               type="submit" 
               className="glow-primary transition-glow px-8 py-3"
               size="lg"
+              disabled={isSubmitting || isSubmitted}
             >
-              ⚡ Generate FIR
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting FIR...
+                </>
+              ) : isSubmitted ? (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  FIR Submitted Successfully!
+                </>
+              ) : (
+                <>
+                  ⚡ Submit & Generate FIR
+                </>
+              )}
             </Button>
           </div>
         </form>
