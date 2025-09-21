@@ -28,19 +28,33 @@ serve(async (req) => {
 
     console.log('Processing OCR fraud detection request for file:', fileName);
 
-    // Call OpenAI Vision API to analyze the document
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call Gemini Vision API to analyze the document
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    
+    if (!geminiApiKey) {
+      throw new Error('Gemini API key not configured');
+    }
+    
+    // Extract base64 data from the image URL
+    let base64Data = image;
+    let mimeType = 'image/jpeg';
+    
+    if (image.startsWith('data:')) {
+      const [header, data] = image.split(',');
+      base64Data = data;
+      mimeType = header.split(';')[0].split(':')[1] || 'image/jpeg';
+    }
+    
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert fraud detection analyst specializing in document analysis. Analyze the provided document image for:
+        contents: [{
+          parts: [
+            {
+              text: `You are an expert fraud detection analyst specializing in document analysis. Analyze the provided document image for:
 
 1. **Text Extraction**: Extract all visible text content
 2. **Fraud Indicators**: Look for signs of document tampering, inconsistencies, suspicious formatting, fake logos, or altered information
@@ -53,45 +67,78 @@ Provide a detailed analysis in JSON format with:
 - fraud_risk: Risk score 1-10
 - fraud_indicators: Array of specific issues found
 - recommendations: What actions to take
-- confidence: How confident you are in the analysis (1-10)`
+- confidence: How confident you are in the analysis (1-10)
+
+Please analyze this document for potential fraud indicators and extract all text content.`
+            },
+            {
+              inline_data: {
+                mime_type: mimeType,
+                data: base64Data
+              }
+            }
+          ]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          topK: 32,
+          topP: 1,
+          maxOutputTokens: 1500
+        },
+        safetySettings: [
+          {
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE'
           },
           {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: 'Please analyze this document for potential fraud indicators and extract all text content.'
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: image
-                }
-              }
-            ]
+            category: 'HARM_CATEGORY_HATE_SPEECH',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+          },
+          {
+            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+          },
+          {
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE'
           }
-        ],
-        max_tokens: 1500,
-        temperature: 0.1
+        ]
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+      console.error('Gemini API error:', errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     let analysisResult;
 
     try {
+      // Get content from Gemini response
+      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error('No valid response from Gemini');
+      }
+      
+      const content = data.candidates[0].content.parts[0].text;
+      
       // Try to parse as JSON first
-      const content = data.choices[0].message.content;
-      analysisResult = JSON.parse(content);
+      try {
+        analysisResult = JSON.parse(content);
+      } catch (jsonParseError) {
+        // Try to extract JSON from the response if it's wrapped in markdown or text
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```([\s\S]*?)```/);
+        if (jsonMatch) {
+          analysisResult = JSON.parse(jsonMatch[1]);
+        } else {
+          throw jsonParseError;
+        }
+      }
     } catch (parseError) {
+      console.error('Error parsing Gemini response:', parseError);
       // If JSON parsing fails, structure the response manually
-      const content = data.choices[0].message.content;
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to analyze document';
       analysisResult = {
         extracted_text: content,
         document_type: "Unknown",

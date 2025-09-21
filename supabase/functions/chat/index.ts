@@ -77,48 +77,68 @@ serve(async (req) => {
       });
     }
 
-    // Get AI response from OpenAI
+    // Get AI response from Gemini
     let aiResponse = '';
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
     
-    if (openAIApiKey) {
+    if (geminiApiKey) {
       try {
-        const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        const systemPrompt = 'You are CyberCop AI, a helpful assistant specializing in cybersecurity, cyber safety, scam reporting, and FIR filing. Provide accurate, helpful information about filing FIRs, reporting scams, identifying fraudulent activities, password security, and general cyber safety. Keep responses concise but informative.';
+        const fullPrompt = `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`;
+        
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${openAIApiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
+            contents: [{
+              parts: [{
+                text: fullPrompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 500,
+              stopSequences: []
+            },
+            safetySettings: [
               {
-                role: 'system',
-                content: 'You are CyberCop AI, a helpful assistant specializing in cybersecurity, cyber safety, scam reporting, and FIR filing. Provide accurate, helpful information about filing FIRs, reporting scams, identifying fraudulent activities, password security, and general cyber safety. Keep responses concise but informative.'
+                category: 'HARM_CATEGORY_HARASSMENT',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
               },
               {
-                role: 'user',
-                content: message
+                category: 'HARM_CATEGORY_HATE_SPEECH',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              },
+              {
+                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+              },
+              {
+                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
               }
-            ],
-            max_tokens: 500,
-            temperature: 0.7,
+            ]
           }),
         });
 
-        const openAIData = await openAIResponse.json();
+        const geminiData = await geminiResponse.json();
         
-        if (openAIData.choices && openAIData.choices[0]) {
-          aiResponse = openAIData.choices[0].message.content;
+        if (geminiData.candidates && geminiData.candidates[0] && geminiData.candidates[0].content) {
+          aiResponse = geminiData.candidates[0].content.parts[0].text;
         } else {
-          throw new Error('Invalid OpenAI response');
+          console.log('No valid Gemini response, using fallback');
+          aiResponse = getFallbackResponse(message);
         }
-      } catch (openAIError) {
-        console.error('OpenAI API error:', openAIError);
+      } catch (geminiError) {
+        console.error('Gemini API error:', geminiError);
         aiResponse = getFallbackResponse(message);
       }
     } else {
-      console.log('OpenAI API key not found, using fallback response');
+      console.log('Gemini API key not found, using fallback response');
       aiResponse = getFallbackResponse(message);
     }
 
