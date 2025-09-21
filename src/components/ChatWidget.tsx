@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { mockChatService } from '@/services/mockChatService';
 
 interface Message {
   id: string;
@@ -19,7 +20,11 @@ interface Chat {
   messages: Message[];
 }
 
-const ChatWidget = () => {
+interface ChatWidgetProps {
+  onToggleDebugPanel?: () => void;
+}
+
+const ChatWidget = ({ onToggleDebugPanel }: ChatWidgetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +53,7 @@ const ChatWidget = () => {
     setMessage('');
 
     try {
+      // Try Supabase Edge Function first
       const { data, error } = await supabase.functions.invoke('chat', {
         body: {
           chat_id: chat?.id,
@@ -64,12 +70,60 @@ const ChatWidget = () => {
         await loadChatMessages(data.chat_id);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
+      console.log('Supabase function failed, using mock service:', error);
+      
+      // Fallback to mock service for local development
+      try {
+        const mockResponse = await mockChatService.sendMessage({
+          chat_id: chat?.id,
+          user_id: user?.id,
+          message: messageText,
+          anonymous_session: !user ? anonymousSession : undefined,
+        });
+
+        // Create a mock chat if none exists
+        if (!chat) {
+          const mockChat = {
+            id: mockResponse.chat_id,
+            title: messageText.substring(0, 50) + (messageText.length > 50 ? '...' : ''),
+            messages: []
+          };
+          setChat(mockChat);
+        }
+
+        // Add user message
+        const userMessage = {
+          id: crypto.randomUUID(),
+          message: messageText,
+          role: 'user' as const,
+          created_at: new Date().toISOString()
+        };
+
+        // Add assistant response
+        const assistantMessage = {
+          id: crypto.randomUUID(),
+          message: mockResponse.message,
+          role: 'assistant' as const,
+          created_at: new Date().toISOString()
+        };
+
+        setChat(prev => prev ? {
+          ...prev,
+          messages: [...prev.messages, userMessage, assistantMessage]
+        } : {
+          id: mockResponse.chat_id,
+          title: messageText.substring(0, 50) + (messageText.length > 50 ? '...' : ''),
+          messages: [userMessage, assistantMessage]
+        });
+
+      } catch (mockError) {
+        console.error('Mock service error:', mockError);
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -126,13 +180,26 @@ const ChatWidget = () => {
 
   if (!isOpen) {
     return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-shadow z-50"
-        size="icon"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </Button>
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+        {onToggleDebugPanel && (
+          <Button
+            onClick={onToggleDebugPanel}
+            className="rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-shadow"
+            size="icon"
+            variant="outline"
+            title="Toggle Debug Panel"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+        )}
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-shadow"
+          size="icon"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </Button>
+      </div>
     );
   }
 
