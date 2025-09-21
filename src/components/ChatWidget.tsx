@@ -180,50 +180,53 @@ const ChatWidget = ({ onToggleDebugPanel }: ChatWidgetProps) => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
-        {onToggleDebugPanel && (
+      <div className="chat-widget-container">
+        <div className="flex flex-col gap-3">
+          {onToggleDebugPanel && (
+            <Button
+              onClick={onToggleDebugPanel}
+              className="rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-shadow glow-primary"
+              size="icon"
+              variant="outline"
+              title="Toggle Debug Panel"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          )}
           <Button
-            onClick={onToggleDebugPanel}
-            className="rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-shadow"
+            onClick={() => setIsOpen(true)}
+            className="chat-widget-button rounded-full w-14 h-14 shadow-lg gradient-primary"
             size="icon"
-            variant="outline"
-            title="Toggle Debug Panel"
           >
-            <Settings className="h-5 w-5" />
+            <MessageCircle className="h-6 w-6" />
           </Button>
-        )}
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-shadow"
-          size="icon"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-80 h-96 shadow-xl z-50 flex flex-col">
-      <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
-        <div>
-          <CardTitle className="text-lg">CyberCop AI</CardTitle>
-          <CardDescription className="text-sm">
-            Ask about cyber safety, FIRs, and scams
-          </CardDescription>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsOpen(false)}
-          className="h-8 w-8"
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      </CardHeader>
+    <div className="chat-widget-container">
+      <Card className="w-80 sm:w-96 h-[30rem] max-h-[calc(100vh-4rem)] shadow-2xl flex flex-col border-primary/20 glow-primary backdrop-blur-sm">
+        <CardHeader className="chat-header flex-row items-center justify-between space-y-0 pb-3 flex-shrink-0">
+          <div>
+            <CardTitle className="text-lg font-bold text-primary">CyberCop AI</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              Your cyber safety assistant 🛡️
+            </CardDescription>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(false)}
+            className="h-8 w-8 hover:bg-primary/10 transition-colors rounded-full"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-4 pt-0">
-        <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+      <CardContent className="chat-content p-0 min-h-0" style={{ overflow: 'hidden', width: '100%' }}>
+        <div className="chat-messages chat-messages-container p-4 space-y-4" style={{ width: '100%', maxWidth: '100%', overflow: 'hidden auto', boxSizing: 'border-box' }}>
           {!chat?.messages?.length ? (
             <div className="bg-muted p-3 rounded-lg">
               <p className="text-sm text-muted-foreground">
@@ -260,16 +263,43 @@ const ChatWidget = ({ onToggleDebugPanel }: ChatWidgetProps) => {
             chat.messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}
+                style={{ maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                  className={`chat-bubble p-3 text-sm ${
                     msg.role === 'user'
-                      ? 'bg-primary text-primary-foreground ml-2'
-                      : 'bg-muted mr-2'
+                      ? 'chat-bubble-user'
+                      : 'chat-bubble-assistant'
                   }`}
+                  style={{
+                    maxWidth: '75%',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'anywhere',
+                    wordBreak: 'break-word',
+                    whiteSpace: 'pre-wrap',
+                    overflow: 'hidden',
+                    boxSizing: 'border-box',
+                    width: 'fit-content'
+                  }}
                 >
-                  {msg.message}
+                  <div
+                    className="chat-bubble-text"
+                    style={{
+                      wordWrap: 'break-word',
+                      overflowWrap: 'anywhere',
+                      wordBreak: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      overflow: 'hidden',
+                      width: '100%',
+                      maxWidth: '100%',
+                      boxSizing: 'border-box',
+                      display: 'block',
+                      minWidth: 0
+                    }}
+                  >
+                    {msg.message}
+                  </div>
                 </div>
               </div>
             ))
@@ -285,27 +315,29 @@ const ChatWidget = ({ onToggleDebugPanel }: ChatWidgetProps) => {
           )}
           
           <div ref={messagesEndRef} />
-        </div>
+          </div>
 
-        <div className="flex gap-2">
-          <Input
-            placeholder="Ask me anything..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            disabled={isLoading}
-            className="flex-1"
-          />
-          <Button
-            onClick={() => sendMessage()}
-            disabled={isLoading || !message.trim()}
-            size="icon"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex gap-2 p-4 border-t border-primary/20 flex-shrink-0 bg-gradient-to-r from-background/50 to-muted/20 backdrop-blur-sm">
+            <Input
+              placeholder="Ask me anything..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              disabled={isLoading}
+              className="chat-input flex-1 rounded-full border-primary/20 focus:border-primary/50 focus:ring-primary/20 bg-background/80"
+            />
+            <Button
+              onClick={() => sendMessage()}
+              disabled={isLoading || !message.trim()}
+              size="icon"
+              className="chat-send-button rounded-full w-10 h-10 glow-primary"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
