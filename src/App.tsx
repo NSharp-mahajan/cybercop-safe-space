@@ -17,6 +17,7 @@ import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
+import DebugPanel from "./components/DebugPanel";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         <ChatWidget />
+        <DebugPanel />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
