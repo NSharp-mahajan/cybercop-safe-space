@@ -16,6 +16,7 @@ import Help from "./pages/Help";
 import CommunityReports from "./pages/CommunityReports";
 import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
+import ScamMap from '@/pages/ScamMapAPI';
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
@@ -42,6 +43,7 @@ const App = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="chat" element={<Chat />} />
               <Route path="report-scam" element={<ReportScam />} />
+              <Route path="scam-map" element={<ScamMap />} />
               <Route path="community-reports" element={<CommunityReports />} />
               <Route path="help" element={<Help />} />
             </Route>
