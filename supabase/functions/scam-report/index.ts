@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import { createHash } from "https://deno.land/std@0.190.0/hash/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -39,11 +39,7 @@ serve(async (req) => {
     }
 
     // Create URL hash for deduplication
-    const encoder = new TextEncoder();
-    const data = encoder.encode(url.toLowerCase().trim());
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const urlHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const urlHash = createHash("sha256").update(url.toLowerCase().trim()).toString();
 
     console.log('Creating scam report:', { url, title, category, urlHash });
 
