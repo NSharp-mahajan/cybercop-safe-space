@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Leaflet custom tooltip styles */
+.custom-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  padding: 12px !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.custom-tooltip::before {
+  border-top-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Leaflet control styles */
+.leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: #3b82f6 !important;
+}
+
 /* CyberCop Cybersecurity Design System 
 All colors MUST be HSL.
 */

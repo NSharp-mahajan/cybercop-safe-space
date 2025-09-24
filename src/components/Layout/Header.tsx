@@ -42,6 +42,7 @@ const Header = () => {
   const resources = [
     { name: "Fraud News", href: "/fraud-news", icon: Newspaper, desc: "Latest cybercrime news updates" },
     { name: "Scam Library", href: "/scam-library", icon: BookOpen, desc: "Browse known scams" },
+    { name: "Scam Map", href: "/scam-map", icon: Search, desc: "View cyber fraud statistics on India map" },
     { name: "Community Reports", href: "/community-reports", icon: Users, desc: "View community reports" },
     { name: "Law Learning", href: "/law-learning", icon: BookOpen, desc: "Learn cybersecurity laws" },
   ];

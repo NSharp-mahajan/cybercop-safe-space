@@ -16,7 +16,11 @@ import Help from "./pages/Help";
 import CommunityReports from "./pages/CommunityReports";
 import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
+<<<<<<< HEAD
 import FraudNews from "./pages/FraudNews";
+=======
+import ScamMap from '@/pages/ScamMapAPI';
+>>>>>>> 5b6b3d50bb913139edb2439a28777e8203ad8811
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
@@ -43,6 +47,7 @@ const App = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="chat" element={<Chat />} />
               <Route path="report-scam" element={<ReportScam />} />
+              <Route path="scam-map" element={<ScamMap />} />
               <Route path="community-reports" element={<CommunityReports />} />
               <Route path="fraud-news" element={<FraudNews />} />
               <Route path="help" element={<Help />} />
