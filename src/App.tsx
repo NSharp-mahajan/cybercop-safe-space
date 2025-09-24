@@ -16,6 +16,7 @@ import Help from "./pages/Help";
 import CommunityReports from "./pages/CommunityReports";
 import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
+import FraudNews from "./pages/FraudNews";
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
@@ -43,6 +44,7 @@ const App = () => {
               <Route path="chat" element={<Chat />} />
               <Route path="report-scam" element={<ReportScam />} />
               <Route path="community-reports" element={<CommunityReports />} />
+              <Route path="fraud-news" element={<FraudNews />} />
               <Route path="help" element={<Help />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
