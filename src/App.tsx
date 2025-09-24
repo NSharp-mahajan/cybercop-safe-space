@@ -9,6 +9,7 @@ import Landing from "./pages/Landing";
 import FirGenerator from "./pages/FirGenerator";
 import PasswordChecker from "./pages/PasswordChecker";
 import OcrFraudDetection from "./pages/OcrFraudDetection";
+import FraudMessageDetector from "./pages/FraudMessageDetector";
 import ScamLibrary from "./pages/ScamLibrary";
 import LawLearning from "./pages/LawLearning";
 import Dashboard from "./pages/Dashboard";
@@ -38,6 +39,7 @@ const App = () => {
               <Route path="fir-generator" element={<FirGenerator />} />
               <Route path="password-checker" element={<PasswordChecker />} />
               <Route path="ocr-fraud" element={<OcrFraudDetection />} />
+              <Route path="fraud-message-detector" element={<FraudMessageDetector />} />
               <Route path="scam-library" element={<ScamLibrary />} />
               <Route path="law-learning" element={<LawLearning />} />
               <Route path="dashboard" element={<Dashboard />} />
