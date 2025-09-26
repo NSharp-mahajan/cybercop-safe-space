@@ -54,22 +54,25 @@ serve(async (req) => {
         contents: [{
           parts: [
             {
-              text: `You are an expert fraud detection analyst specializing in document analysis. Analyze the provided document image for:
+              text: `You are an expert fraud detection analyst specializing in document analysis. Analyze the provided document image.
 
-1. **Text Extraction**: Extract all visible text content
-2. **Fraud Indicators**: Look for signs of document tampering, inconsistencies, suspicious formatting, fake logos, or altered information
-3. **Document Type**: Identify what type of document this is (invoice, ID, certificate, etc.)
-4. **Risk Assessment**: Rate the fraud risk from 1-10 (1=legitimate, 10=definitely fraudulent)
+IMPORTANT: You must respond with ONLY valid JSON, no additional text or formatting.
 
-Provide a detailed analysis in JSON format with:
-- extracted_text: All text found in the document
-- document_type: Type of document identified
-- fraud_risk: Risk score 1-10
-- fraud_indicators: Array of specific issues found
-- recommendations: What actions to take
-- confidence: How confident you are in the analysis (1-10)
+Analyze for:
+1. Text Extraction: Extract all visible text content
+2. Fraud Indicators: Look for signs of tampering, inconsistencies, fake elements
+3. Document Type: Identify the document type
+4. Risk Assessment: Rate fraud risk 1-10
 
-Please analyze this document for potential fraud indicators and extract all text content.`
+Return JSON in this exact format:
+{
+  "extracted_text": "all text from the document",
+  "document_type": "type of document",
+  "fraud_risk": 5,
+  "fraud_indicators": ["indicator 1", "indicator 2"],
+  "recommendations": ["recommendation 1", "recommendation 2"],
+  "confidence": 8
+}`
             },
             {
               inline_data: {
@@ -128,10 +131,21 @@ Please analyze this document for potential fraud indicators and extract all text
         analysisResult = JSON.parse(content);
       } catch (jsonParseError) {
         // Try to extract JSON from the response if it's wrapped in markdown or text
-        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/```([\s\S]*?)```/);
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || 
+                         content.match(/```([\s\S]*?)```/) ||
+                         content.match(/\{[\s\S]*\}/);
+        
         if (jsonMatch) {
-          analysisResult = JSON.parse(jsonMatch[1]);
+          const jsonStr = jsonMatch[1] || jsonMatch[0];
+          // Clean up the JSON string
+          const cleanedJson = jsonStr.trim()
+            .replace(/^```json\s*/, '')
+            .replace(/```$/, '')
+            .trim();
+          analysisResult = JSON.parse(cleanedJson);
         } else {
+          // If still no JSON, try to extract structured data from text
+          console.log('Gemini response (not JSON):', content);
           throw jsonParseError;
         }
       }
