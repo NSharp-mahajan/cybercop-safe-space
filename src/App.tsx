@@ -21,6 +21,7 @@ import FraudNews from "./pages/FraudNews";
 import ScamMap from '@/pages/ScamMapAPI';
 import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
+import VoiceScamDetector from "./pages/VoiceScamDetector";
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="chat" element={<Chat />} />
               <Route path="report-scam" element={<ReportScam />} />
               <Route path="scam-map" element={<ScamMap />} />
+              <Route path="voice-scam-detector" element={<VoiceScamDetector />} />
               <Route path="community-reports" element={<CommunityReports />} />
               <Route path="fraud-news" element={<FraudNews />} />
               <Route path="help" element={<Help />} />

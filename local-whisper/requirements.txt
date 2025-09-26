@@ -1,0 +1,13 @@
+# Core dependencies
+whisper
+torch>=2.0.0
+
+# Web server
+flask
+flask-cors
+
+# Required by Whisper
+numpy
+ffmpeg-python
+more-itertools
+tiktoken

@@ -24,7 +24,8 @@ import {
   Search,
   Home,
   Newspaper,
-  KeyRound
+  KeyRound,
+  Phone
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
 import { UserMenu } from "@/components/auth/UserMenu";
@@ -36,6 +37,7 @@ const Header = () => {
   const securityTools = [
     { name: "Security Tools Hub", href: "/security-tools", icon: KeyRound, desc: "Password checker, URL scanner & fraud detector" },
     { name: "OCR Fraud Detection", href: "/ocr-fraud", icon: ScanText, desc: "Analyze documents for fraud" },
+    { name: "Voice Scam Detector", href: "/voice-scam-detector", icon: Phone, desc: "Analyze call recordings for scams" },
     { name: "Report Scam", href: "/report-scam", icon: AlertTriangle, desc: "Report suspicious activities" },
   ];
 
