@@ -6,7 +6,6 @@ import {
   Shield,
   FileText,
   Bot,
-  Map,
   Eye,
   Lock,
   Phone,
@@ -47,13 +46,6 @@ const Landing = () => {
       href: "/chat",
     },
     {
-      icon: Map,
-      title: "Live Threat Map",
-      description: "Real-time visualization of cyber threats and scams across India with predictive analytics",
-      status: "Available",
-      href: "/scam-map",
-    },
-    {
       icon: Eye,
       title: "OCR Fraud Detection",
       description: "Advanced document scanning with AI-powered fraud pattern recognition",
@@ -68,9 +60,6 @@ const Landing = () => {
       href: "/scam-library",
     },
   ];
-
-
-
 
 
   return (
@@ -469,7 +458,6 @@ const Landing = () => {
                 <li><Link to="/fir-generator" className="text-slate-300 hover:text-primary transition-colors">FIR Generator</Link></li>
                 <li><Link to="/password-checker" className="text-slate-300 hover:text-primary transition-colors">Password Checker</Link></li>
                 <li><Link to="/chat" className="text-slate-300 hover:text-primary transition-colors">AI Assistant</Link></li>
-                <li><Link to="/scam-map" className="text-slate-300 hover:text-primary transition-colors">Threat Map</Link></li>
                 <li><Link to="/scam-library" className="text-slate-300 hover:text-primary transition-colors">Scam Library</Link></li>
               </ul>
             </div>
@@ -499,7 +487,7 @@ const Landing = () => {
                   <span className="text-slate-300">support@cybercop.in</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Map className="h-4 w-4 text-primary" />
+                  <Globe className="h-4 w-4 text-primary" />
                   <span className="text-slate-300">New Delhi, India</span>
                 </div>
               </div>

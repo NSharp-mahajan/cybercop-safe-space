@@ -18,7 +18,6 @@ import CommunityReports from "./pages/CommunityReports";
 import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
 import FraudNews from "./pages/FraudNews";
-import ScamMap from '@/pages/ScamMapAPI';
 import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
 import VoiceScamDetector from "./pages/VoiceScamDetector";
@@ -49,7 +48,6 @@ const App = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="chat" element={<Chat />} />
               <Route path="report-scam" element={<ReportScam />} />
-              <Route path="scam-map" element={<ScamMap />} />
               <Route path="voice-scam-detector" element={<VoiceScamDetector />} />
               <Route path="community-reports" element={<CommunityReports />} />
               <Route path="fraud-news" element={<FraudNews />} />
