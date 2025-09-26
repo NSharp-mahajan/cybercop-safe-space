@@ -14,8 +14,6 @@ import {
   Menu, 
   Shield, 
   FileText, 
-  Lock, 
-  Bot, 
   ScanText, 
   BookOpen, 
   BarChart3, 
@@ -25,8 +23,8 @@ import {
   Users,
   Search,
   Home,
-  MessageSquare,
-  Newspaper
+  Newspaper,
+  KeyRound
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
 
@@ -35,9 +33,8 @@ const Header = () => {
   const location = useLocation();
 
   const securityTools = [
+    { name: "Security Tools Hub", href: "/security-tools", icon: KeyRound, desc: "Password checker, URL scanner & fraud detector" },
     { name: "OCR Fraud Detection", href: "/ocr-fraud", icon: ScanText, desc: "Analyze documents for fraud" },
-    { name: "Fraud Message Detector", href: "/fraud-message-detector", icon: MessageSquare, desc: "Detect fraud in WhatsApp messages" },
-    { name: "Password Checker", href: "/password-checker", icon: Lock, desc: "Check password strength" },
     { name: "Report Scam", href: "/report-scam", icon: AlertTriangle, desc: "Report suspicious activities" },
   ];
 
@@ -100,14 +97,14 @@ const Header = () => {
                         <NavigationMenuLink asChild>
                           <Link
                             className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                            to="/ocr-fraud"
+                            to="/security-tools"
                           >
-                            <ScanText className="h-6 w-6" />
+                            <KeyRound className="h-6 w-6" />
                             <div className="mb-2 mt-4 text-lg font-medium">
-                              OCR Fraud Detection
+                              Security Tools Hub
                             </div>
                             <p className="text-sm leading-tight text-muted-foreground">
-                              AI-powered document analysis to detect fraud
+                              All-in-one security toolkit with password checker, URL scanner & fraud detector
                             </p>
                           </Link>
                         </NavigationMenuLink>
