@@ -15,9 +15,10 @@ interface FormData {
 
 interface FIRPreviewProps {
   formData: FormData;
+  rephrasedText?: string;
 }
 
-function FIRPreview({ formData }: FIRPreviewProps) {
+function FIRPreview({ formData, rephrasedText }: FIRPreviewProps) {
   const generateFIRText = (): string => {
     const { name, address, contact, date, location, incident, language } = formData;
     
@@ -25,6 +26,9 @@ function FIRPreview({ formData }: FIRPreviewProps) {
     if (!name || !address || !contact || !date || !location || !incident) {
       return "Fill in the form details to see your FIR preview...";
     }
+
+    // Use rephrased text if available, otherwise use original incident description
+    const incidentText = rephrasedText || incident;
     
     if (language === "hi") {
       return `सेवा में,
@@ -38,7 +42,7 @@ function FIRPreview({ formData }: FIRPreviewProps) {
 मैं, ${name}, ${address} का निवासी, एक घटना की रिपोर्ट करना चाहता/चाहती हूँ जो ${date} को ${location} पर हुई थी।
 
 विवरण:
-${incident}
+${incidentText}
 
 मुझसे ${contact} पर संपर्क किया जा सकता है।
 
@@ -60,7 +64,7 @@ Respected Sir/Madam,
 I, ${name}, residing at ${address}, would like to report an incident that occurred on ${date} at ${location}.
 
 Details:
-${incident}
+${incidentText}
 
 You can contact me at ${contact}.
 
@@ -83,6 +87,11 @@ ${name}`;
         <CardTitle className="flex items-center gap-2">
           <Eye className="h-5 w-5 text-primary" />
           Live FIR Preview
+          {rephrasedText && (
+            <Badge variant="default" className="bg-green-500 hover:bg-green-600 ml-2">
+              ✨ AI Enhanced
+            </Badge>
+          )}
           {isComplete ? (
             <Badge variant="default" className="ml-auto">Complete</Badge>
           ) : (

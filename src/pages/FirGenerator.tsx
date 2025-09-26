@@ -3,6 +3,7 @@ import { FileText } from "lucide-react";
 import FIRForm from "@/components/FIRForm";
 import FIRResult from "@/components/FIRResult";
 import FIRPreview from "@/components/FIRPreview";
+import FIRProcessGuide from "@/components/FIRProcessGuide";
 
 interface FormData {
   name: string;
@@ -12,6 +13,7 @@ interface FormData {
   date: string;
   location: string;
   language: string;
+  state?: string;
 }
 
 const FirGenerator = () => {
@@ -24,10 +26,16 @@ const FirGenerator = () => {
     date: "",
     location: "",
     language: "en",
+    state: "",
   });
+  const [rephrasedText, setRephrasedText] = useState("");
 
   const handleFormDataChange = (data: FormData) => {
     setFormData(data);
+  };
+
+  const handleRephrasedTextChange = (text: string) => {
+    setRephrasedText(text);
   };
 
   const handleGenerate = (data: FormData) => {
@@ -59,18 +67,38 @@ const FirGenerator = () => {
 
         {/* Render appropriate component based on current step */}
         {currentStep === 'form' ? (
-          <div className="grid lg:grid-cols-2 gap-8">
-            <div>
-              <FIRForm 
-                formData={formData}
-                onFormDataChange={handleFormDataChange}
-                onGenerate={handleGenerate} 
-              />
+          <>
+            <div className="grid lg:grid-cols-2 gap-8 mb-12">
+              <div>
+                <FIRForm 
+                  formData={formData}
+                  onFormDataChange={handleFormDataChange}
+                  onGenerate={handleGenerate}
+                  onRephrasedTextChange={handleRephrasedTextChange}
+                  showProcessGuide={false}
+                />
+              </div>
+              <div>
+                <FIRPreview formData={formData} rephrasedText={rephrasedText} />
+              </div>
             </div>
-            <div>
-              <FIRPreview formData={formData} />
-            </div>
-          </div>
+            
+            {/* Full-width Process Guide */}
+            {formData.state && (
+              <div className="w-full">
+                <div className="mb-8 text-center">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-2">
+                    🏛️ Complete FIR Filing Guide for {formData.state}
+                  </h2>
+                  <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+                    Professional step-by-step guidance from legal experts to help you navigate the FIR process with confidence
+                  </p>
+                </div>
+                
+                <FIRProcessGuide state={formData.state} />
+              </div>
+            )}
+          </>
         ) : (
           <FIRResult detail={formData} onBack={handleBack} />
         )}
