@@ -24,7 +24,9 @@ import {
   AlertTriangle,
   Users,
   Search,
-  Home
+  Home,
+  MessageSquare,
+  Newspaper
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
 
