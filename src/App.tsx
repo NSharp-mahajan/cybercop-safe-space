@@ -21,6 +21,7 @@ import ReportScam from "./pages/ReportScam";
 import FraudNews from "./pages/FraudNews";
 import ScamMap from '@/pages/ScamMapAPI';
 import AuthCallback from "./pages/AuthCallback";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
@@ -54,8 +55,9 @@ const App = () => {
               <Route path="fraud-news" element={<FraudNews />} />
               <Route path="help" element={<Help />} />
             </Route>
-            {/* Auth callback route (outside Layout) */}
+            {/* Auth routes (outside Layout) */}
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, Shield } from "lucide-react";
+import { ResetPasswordModal } from "./ResetPasswordModal";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const resetForm = () => {
     setEmail("");
@@ -314,6 +316,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(true)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Forgot your password?
+                </button>
+              </div>
             </form>
           ) : (
             <form onSubmit={handleSignUp} className="space-y-4">
@@ -421,6 +433,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
         </div>
       </DialogContent>
+
+      {/* Reset Password Modal */}
+      <ResetPasswordModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onBackToSignIn={() => {
+          setShowResetModal(false);
+          setActiveTab('signin');
+        }}
+      />
     </Dialog>
   );
 };
