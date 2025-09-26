@@ -9,14 +9,15 @@ import {
   Map,
   Eye,
   Lock,
-  GraduationCap,
   Phone,
   MessageSquare,
   BookOpen,
   Users,
   Zap,
-  AlertTriangle,
   CheckCircle,
+  Award,
+  Globe,
+  ArrowRight,
 } from "lucide-react";
 import QuickScamReport from "@/components/QuickScamReport";
 import Robot from "@/components/Robot";
@@ -25,77 +26,51 @@ const Landing = () => {
   const features = [
     {
       icon: FileText,
-      title: "FIR Generator",
-      description: "Generate First Information Reports for cyber incidents with multi-language support",
+      title: "Smart FIR Generator",
+      description: "AI-powered First Information Report generation with multi-language support and legal templates",
       status: "Available",
       href: "/fir-generator",
     },
     {
       icon: Lock,
-      title: "Password Strength Checker",
-      description: "Analyze and strengthen your password security",
+      title: "Advanced Password Security",
+      description: "Real-time password strength analysis with breach detection and security recommendations",
       status: "Available",
       href: "/password-checker",
     },
     {
       icon: Bot,
-      title: "AI Chatbot Assistant",
-      description: "24/7 AI-powered cybersecurity guidance and support",
+      title: "AI Security Assistant",
+      description: "24/7 intelligent cybersecurity guidance with natural language processing",
       status: "Available",
       href: "/chat",
     },
     {
       icon: Map,
-      title: "Scam Map",
-      description: "Real-time visualization of scams and frauds across regions",
-      status: "Coming Soon",
+      title: "Live Threat Map",
+      description: "Real-time visualization of cyber threats and scams across India with predictive analytics",
+      status: "Available",
+      href: "/scam-map",
     },
     {
       icon: Eye,
-      title: "OCR + Fraud Detection",
-      description: "Scan and analyze documents for fraudulent content",
+      title: "OCR Fraud Detection",
+      description: "Advanced document scanning with AI-powered fraud pattern recognition",
       status: "Available",
       href: "/ocr-fraud",
     },
     {
-      icon: GraduationCap,
-      title: "Gamified Law Learning",
-      description: "Interactive cybersecurity law education platform",
-      status: "Coming Soon",
-    },
-    {
-      icon: Phone,
-      title: "Fraud Call Detection",
-      description: "AI-powered analysis of suspicious phone calls",
-      status: "Coming Soon",
-    },
-    {
-      icon: MessageSquare,
-      title: "WhatsApp Bot",
-      description: "WhatsApp integration for instant cybersecurity alerts",
-      status: "Coming Soon",
-    },
-    {
       icon: BookOpen,
-      title: "Scam Awareness Library",
-      description: "Comprehensive database of known scam patterns and prevention",
+      title: "Scam Intelligence Library",
+      description: "Comprehensive database of 10,000+ scam patterns with prevention strategies",
       status: "Available",
       href: "/scam-library",
     },
-    {
-      icon: Users,
-      title: "Community Forum",
-      description: "Connect with cybersecurity experts and share experiences",
-      status: "Coming Soon",
-    },
   ];
 
-  const stats = [
-    { label: "Active Users Protected", value: "10K+", icon: Shield },
-    { label: "Threats Detected", value: "50K+", icon: AlertTriangle },
-    { label: "Incidents Resolved", value: "5K+", icon: CheckCircle },
-    { label: "Security Reports Generated", value: "25K+", icon: FileText },
-  ];
+
+
+
 
   return (
     <div className="min-h-screen">
@@ -159,24 +134,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 px-4 border-y border-border/40">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 rounded-full bg-primary/10 glow-primary">
-                    <stat.icon className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
-                <div className="text-muted-foreground">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Features Grid */}
       <section className="py-24 px-4">
@@ -194,13 +151,13 @@ const Landing = () => {
             </p>
           </div>
 
-          {/* <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="group transition-all duration-300 hover:glow-primary border-border/40">
+              <Card key={index} className="group transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 border-border/40">
                 <CardHeader>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-primary/10 group-hover:glow-primary transition-all">
-                      <feature.icon className="h-6 w-6 text-primary" />
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300 shadow-lg">
+                      <feature.icon className="h-7 w-7 text-primary" />
                     </div>
                     <Badge 
                       variant={feature.status === "Available" ? "default" : "secondary"}
@@ -209,29 +166,24 @@ const Landing = () => {
                       {feature.status}
                     </Badge>
                   </div>
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                  <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors duration-300 mb-3">
                     {feature.title}
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground">
+                  <CardDescription className="text-muted-foreground group-hover:text-foreground transition-colors duration-300 leading-relaxed">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {feature.href ? (
-                    <Button asChild className="w-full transition-glow hover:glow-primary">
-                      <Link to={feature.href}>
-                        Try Now
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button disabled className="w-full">
-                      Coming Soon
-                    </Button>
-                  )}
+                  <Button asChild className="w-full transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                    <Link to={feature.href}>
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Try Now
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
-          </div> */}
+          </div>
 
           {/* Quick Scam Report Widget */}
           <div className="mt-16 max-w-2xl mx-auto">
@@ -240,24 +192,82 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-24 px-4 bg-gradient-to-r from-primary/10 to-accent/10">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Secure Your Digital Life?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of users who trust CyberCop for their cybersecurity needs. 
-            Start protecting yourself today.
-          </p>
-          <Button size="lg" asChild className="glow-primary transition-glow">
-            <Link to="/fir-generator">
-              <Shield className="mr-2 h-5 w-5" />
-              Get Started Now
-            </Link>
-          </Button>
+
+
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white py-16 px-4">
+        <div className="container mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Company Info */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Shield className="h-8 w-8 text-primary" />
+                <span className="text-2xl font-bold">CyberCop</span>
+              </div>
+              <p className="text-slate-300 leading-relaxed">
+                India's premier cybersecurity platform providing comprehensive protection 
+                against digital threats and fraud.
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary/30 transition-colors cursor-pointer">
+                  <Globe className="h-4 w-4" />
+                </div>
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary/30 transition-colors cursor-pointer">
+                  <MessageSquare className="h-4 w-4" />
+                </div>
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center hover:bg-primary/30 transition-colors cursor-pointer">
+                  <Users className="h-4 w-4" />
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2">
+                <li><Link to="/fir-generator" className="text-slate-300 hover:text-primary transition-colors">FIR Generator</Link></li>
+                <li><Link to="/password-checker" className="text-slate-300 hover:text-primary transition-colors">Password Checker</Link></li>
+                <li><Link to="/chat" className="text-slate-300 hover:text-primary transition-colors">AI Assistant</Link></li>
+                <li><Link to="/scam-map" className="text-slate-300 hover:text-primary transition-colors">Threat Map</Link></li>
+                <li><Link to="/scam-library" className="text-slate-300 hover:text-primary transition-colors">Scam Library</Link></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Resources</h3>
+              <ul className="space-y-2">
+                <li><Link to="/help" className="text-slate-300 hover:text-primary transition-colors">Help Center</Link></li>
+                <li><Link to="/community-reports" className="text-slate-300 hover:text-primary transition-colors">Community Reports</Link></li>
+                <li><Link to="/fraud-news" className="text-slate-300 hover:text-primary transition-colors">Fraud News</Link></li>
+                <li><a href="#" className="text-slate-300 hover:text-primary transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-slate-300 hover:text-primary transition-colors">Terms of Service</a></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Contact</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4 text-primary" />
+                  <span className="text-slate-300">+91 1800-CYBER-COP</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MessageSquare className="h-4 w-4 text-primary" />
+                  <span className="text-slate-300">support@cybercop.in</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Map className="h-4 w-4 text-primary" />
+                  <span className="text-slate-300">New Delhi, India</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-      </section>
+      </footer>
     </div>
   );
 };
