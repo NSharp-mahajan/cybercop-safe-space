@@ -71,7 +71,7 @@ Provide your analysis as a JSON object with these fields:
 - recommendations: array of suggested actions
 - confidence: your confidence level from 1 to 10
 
-Respond only with the JSON object.`
+IMPORTANT: Respond with ONLY the raw JSON object. Do not wrap it in markdown code blocks (no \`\`\`json). Do not include any other text before or after the JSON.`
             },
             {
               inline_data: {
@@ -129,27 +129,55 @@ Respond only with the JSON object.`
       const content = data.candidates[0].content.parts[0].text;
       console.log('Gemini text response length:', content.length);
       
+      // Log the raw content for debugging
+      console.log('Raw Gemini response first 200 chars:', content.substring(0, 200));
+      
       // Try to parse as JSON first
       try {
         analysisResult = JSON.parse(content);
       } catch (jsonParseError) {
-        // Try to extract JSON from the response if it's wrapped in markdown or text
-        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || 
-                         content.match(/```([\s\S]*?)```/) ||
-                         content.match(/\{[\s\S]*\}/);
+        console.log('Direct JSON parse failed, trying to extract...');
         
-        if (jsonMatch) {
-          const jsonStr = jsonMatch[1] || jsonMatch[0];
-          // Clean up the JSON string
-          const cleanedJson = jsonStr.trim()
-            .replace(/^```json\s*/, '')
-            .replace(/```$/, '')
-            .trim();
-          analysisResult = JSON.parse(cleanedJson);
+        // Check if the content starts with ```json
+        if (content.startsWith('```json')) {
+          console.log('Found markdown JSON block');
+          const jsonMatch = content.match(/```json\s*\n?([\s\S]*?)\n?```/);
+          if (jsonMatch && jsonMatch[1]) {
+            try {
+              analysisResult = JSON.parse(jsonMatch[1].trim());
+              console.log('Successfully extracted JSON from markdown');
+            } catch (e) {
+              console.error('Failed to parse extracted JSON:', e);
+              throw e;
+            }
+          }
         } else {
-          // If still no JSON, try to extract structured data from text
-          console.log('Gemini response (not JSON):', content);
-          throw jsonParseError;
+          // Try other patterns
+          const patterns = [
+            /```\s*\n?([\s\S]*?)\n?```/,  // Generic code block
+            /\{[\s\S]*\}/  // Raw JSON object
+          ];
+          
+          let parsed = false;
+          for (const pattern of patterns) {
+            const match = content.match(pattern);
+            if (match) {
+              try {
+                const jsonStr = match[1] || match[0];
+                analysisResult = JSON.parse(jsonStr.trim());
+                console.log('Successfully parsed with pattern:', pattern);
+                parsed = true;
+                break;
+              } catch (e) {
+                console.log('Pattern failed:', pattern);
+              }
+            }
+          }
+          
+          if (!parsed) {
+            console.log('Could not extract JSON, using fallback');
+            throw jsonParseError;
+          }
         }
       }
     } catch (parseError) {
