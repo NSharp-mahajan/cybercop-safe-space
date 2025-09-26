@@ -25,6 +25,7 @@ import {
   Users,
   Search,
   Home,
+  MessageSquare,
   Newspaper
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
@@ -35,6 +36,7 @@ const Header = () => {
 
   const securityTools = [
     { name: "OCR Fraud Detection", href: "/ocr-fraud", icon: ScanText, desc: "Analyze documents for fraud" },
+    { name: "Fraud Message Detector", href: "/fraud-message-detector", icon: MessageSquare, desc: "Detect fraud in WhatsApp messages" },
     { name: "Password Checker", href: "/password-checker", icon: Lock, desc: "Check password strength" },
     { name: "Report Scam", href: "/report-scam", icon: AlertTriangle, desc: "Report suspicious activities" },
   ];
