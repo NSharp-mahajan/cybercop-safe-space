@@ -432,13 +432,13 @@ const ScamMap = () => {
   // Show loading state
   if ((loading && !scamData) || mapLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 p-6 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-800">
+          <Loader2 className="h-12 w-12 animate-spin text-cyan-400 mx-auto" />
+          <h2 className="text-xl font-semibold text-white">
             {mapLoading ? 'Loading India Map...' : 'Loading Cyber Crime Data...'}
           </h2>
-          <p className="text-gray-600">
+          <p className="text-slate-400">
             {mapLoading ? 'Fetching real geographical boundaries from API' : 'Initializing real-time cyber crime intelligence'}
           </p>
         </div>
@@ -449,59 +449,60 @@ const ScamMap = () => {
   // Show error state
   if ((error && !scamData) || mapError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 p-6 flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-gray-800">Failed to Load Data</h2>
-          <p className="text-gray-600">{mapError || error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
+          <h2 className="text-xl font-semibold text-white">Failed to Load Data</h2>
+          <p className="text-slate-400">{mapError || error}</p>
+          <Button onClick={() => window.location.reload()} className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500">Try Again</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-6">
+    <div className="min-h-screen bg-slate-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-200">
+            <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg transform hover:scale-105 transition-transform duration-200 shadow-cyan-500/25">
               <Map className="h-10 w-10 text-white" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-red-600 to-orange-600 bg-clip-text text-transparent">
-                India Cyber Crime Intelligence
+              <h1 className="text-5xl font-bold">
+                <span className="text-white">India Cyber Crime</span>{' '}
+                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Intelligence</span>
               </h1>
-              <p className="text-lg text-gray-700 mt-2 font-medium flex items-center gap-2">
-                <Activity className="h-5 w-5 text-blue-600" />
+              <p className="text-lg text-slate-400 mt-2 font-medium flex items-center gap-2">
+                <Activity className="h-5 w-5 text-cyan-400" />
                 Real geographical boundaries with live cyber fraud data visualization
               </p>
             </div>
           </div>
 
           {/* Data Source and Status Indicator */}
-          <div className="mb-6 p-4 bg-white/60 backdrop-blur-sm border border-white/20 rounded-xl shadow-lg">
+          <div className="mb-6 p-4 bg-slate-800/80 backdrop-blur-sm border border-slate-700/60 rounded-xl shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 px-4 py-2 text-sm font-semibold shadow-lg">
+                <Badge className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 px-4 py-2 text-sm font-semibold shadow-lg shadow-cyan-500/25">
                   🌍 Real Geographic Data + Live Crime Stats
                 </Badge>
                 {lastUpdated && (
-                  <span className="text-sm text-gray-600 bg-white/50 px-3 py-1 rounded-lg">
+                  <span className="text-sm text-slate-300 bg-slate-700/70 px-3 py-1 rounded-lg">
                     ⏰ Updated: {lastUpdated.toLocaleTimeString()}
                   </span>
                 )}
                 {loading && (
-                  <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50/50 px-3 py-1 rounded-lg">
-                    <div className="animate-spin h-4 w-4 border-2 border-blue-600 rounded-full border-t-transparent"></div>
+                  <div className="flex items-center gap-2 text-sm text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-lg">
+                    <div className="animate-spin h-4 w-4 border-2 border-cyan-400 rounded-full border-t-transparent"></div>
                     Refreshing...
                   </div>
                 )}
               </div>
               <div className="flex gap-3">
                 <Button 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 shadow-lg transform hover:scale-105 transition-all duration-200" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white border-0 shadow-lg transform hover:scale-105 transition-all duration-200 shadow-cyan-500/25" 
                   size="sm" 
                   onClick={refreshData}
                   disabled={loading}
@@ -509,7 +510,7 @@ const ScamMap = () => {
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh Data
                 </Button>
-                <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-0 px-3 py-1 shadow-lg">
+                <Badge className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 px-3 py-1 shadow-lg shadow-cyan-500/25">
                   🗺️ API Map Data
                 </Badge>
               </div>
@@ -519,15 +520,15 @@ const ScamMap = () => {
           {/* Quick Stats */}
           {aggregatedStats && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <Card className="bg-slate-800/80 border-slate-700/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 transform hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl">
                       <AlertTriangle className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Total Cases</p>
-                      <p className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                      <p className="text-sm font-medium text-slate-400">Total Cases</p>
+                      <p className="text-3xl font-bold text-white">
                         {aggregatedStats.totalCases.toLocaleString()}
                       </p>
                     </div>
@@ -535,15 +536,15 @@ const ScamMap = () => {
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <Card className="bg-slate-800/80 border-slate-700/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 transform hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
+                    <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-cyan-500/25">
                       <DollarSign className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Total Loss</p>
-                      <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      <p className="text-sm font-medium text-slate-400">Total Loss</p>
+                      <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                         ₹{aggregatedStats.totalLoss.toFixed(0)} Cr
                       </p>
                     </div>
@@ -551,15 +552,15 @@ const ScamMap = () => {
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-br from-blue-50 to-sky-50 border-blue-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <Card className="bg-slate-800/80 border-slate-700/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 transform hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl">
+                    <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-emerald-500/25">
                       <Shield className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Financial Fraud</p>
-                      <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-600 bg-clip-text text-transparent">
+                      <p className="text-sm font-medium text-slate-400">Financial Fraud</p>
+                      <p className="text-3xl font-bold text-white">
                         {aggregatedStats.financialFraud.toLocaleString()}
                       </p>
                     </div>
@@ -567,15 +568,15 @@ const ScamMap = () => {
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <Card className="bg-slate-800/80 border-slate-700/60 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 transform hover:-translate-y-1">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl">
+                    <div className="p-3 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl shadow-purple-500/25">
                       <Users className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Online Fraud</p>
-                      <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">
+                      <p className="text-sm font-medium text-slate-400">Online Fraud</p>
+                      <p className="text-3xl font-bold text-white">
                         {aggregatedStats.onlineFraud.toLocaleString()}
                       </p>
                     </div>
@@ -590,61 +591,115 @@ const ScamMap = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Interactive Map */}
           <div className="lg:col-span-3">
-            <Card className="bg-white/70 backdrop-blur-sm border border-white/20 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-lg">
+            <Card className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/60 shadow-xl">
+              <CardHeader className="bg-slate-900/60 rounded-t-lg border-b border-slate-700/60">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-lg font-bold">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+                  <CardTitle className="flex items-center gap-2 text-lg font-bold text-white">
+                    <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg shadow-cyan-500/25">
                       <Eye className="h-5 w-5 text-white" />
                     </div>
                     🇮🇳 Real India Geographic Map - Cyber Crime Data
                   </CardTitle>
                   <div className="flex gap-2">
-                    <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1">
+                    <Badge className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-3 py-1 shadow-cyan-500/25">
                       <Activity className="h-3 w-3 mr-1" />
                       Live API Data
                     </Badge>
                   </div>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-slate-400">
                   Real geographical boundaries from OpenStreetMap • Hover for instant stats • Click for detailed analysis
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="h-[500px] rounded-lg overflow-hidden border-2 border-white/20 shadow-inner relative">
+                <div className="h-[500px] rounded-lg overflow-hidden border-2 border-slate-700/40 shadow-inner relative bg-slate-900/60">
                   {indiaGeoJSON ? (
                     <MapContainer
                       center={[20.5937, 78.9629]}
                       zoom={5}
                       style={{ height: '100%', width: '100%' }}
-                      zoomControl={true}
-                      scrollWheelZoom={true}
+                      className="leaflet-container"
                     >
                       <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        opacity={0.6}
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        opacity={0.7}
                       />
                       <GeoJSON
                         data={indiaGeoJSON}
-                        style={getFeatureStyle}
-                        onEachFeature={onEachFeature}
+                        style={(feature) => {
+                          const stateName = feature?.properties?.ST_NM;
+                          const stateData = scamData?.find(s => s.stateName === stateName);
+                          return {
+                            fillColor: stateData ? getRiskColor(stateData.riskLevel) : '#6b7280',
+                            weight: 1,
+                            opacity: 1,
+                            color: '#374151',
+                            fillOpacity: 0.7,
+                          };
+                        }}
+                        onEachFeature={(feature, layer) => {
+                          const stateName = feature.properties.ST_NM;
+                          const stateData = scamData?.find(s => s.stateName === stateName);
+                          
+                          layer.on({
+                            mouseover: (e) => {
+                              e.target.setStyle({
+                                weight: 3,
+                                color: '#06b6d4',
+                                fillOpacity: 0.9
+                              });
+                              if (stateData) {
+                                setHoveredState(stateData);
+                              }
+                            },
+                            mouseout: (e) => {
+                              e.target.setStyle({
+                                weight: 1,
+                                color: '#374151',
+                                fillOpacity: 0.7
+                              });
+                              setHoveredState(null);
+                            },
+                            click: (e) => {
+                              if (stateData) {
+                                setSelectedState(stateData);
+                              }
+                            }
+                          });
+
+                          if (stateData) {
+                            layer.bindTooltip(
+                              `<div style="background: #1e293b; color: white; padding: 8px; border-radius: 8px; border: 1px solid #475569;">
+                                <strong style="color: #06b6d4;">${stateData.stateName}</strong><br/>
+                                Cases: <strong>${stateData.totalCases.toLocaleString()}</strong><br/>
+                                Risk: <strong style="color: ${getRiskColor(stateData.riskLevel)}">${stateData.riskLevel}</strong><br/>
+                                Loss: <strong>₹${stateData.totalLoss} Cr</strong>
+                              </div>`,
+                              {
+                                permanent: false,
+                                sticky: true,
+                                className: 'custom-tooltip'
+                              }
+                            );
+                          }
+                        }}
                       />
                     </MapContainer>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
-                      <div className="text-center space-y-4">
-                        <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto" />
-                        <p className="text-slate-600">Loading map data...</p>
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center">
+                        <div className="animate-spin h-8 w-8 border-2 border-cyan-400 rounded-full border-t-transparent mx-auto mb-4"></div>
+                        <p className="text-slate-400">Loading geographical boundaries...</p>
                       </div>
                     </div>
                   )}
                 </div>
                 
                 {/* Legend */}
-                <div className="m-4 p-4 bg-gradient-to-r from-slate-50 via-white to-slate-50 rounded-xl border border-slate-200 shadow-sm">
-                  <h4 className="font-semibold mb-3 text-slate-700 flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
+                <div className="m-4 p-4 bg-slate-900/80 backdrop-blur-sm rounded-xl border border-slate-700/60 shadow-sm">
+                  <h4 className="font-semibold mb-3 text-white flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse" />
                     Risk Level Color Coding
                   </h4>
                   <div className="flex flex-wrap gap-4">
@@ -654,17 +709,17 @@ const ScamMap = () => {
                       { level: 'High', color: '#EF4444', gradient: 'from-red-400 to-red-600' },
                       { level: 'Critical', color: '#7C2D12', gradient: 'from-red-700 to-red-900' }
                     ].map(({ level, color, gradient }) => (
-                      <div key={level} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 backdrop-blur-sm border border-white/30">
+                      <div key={level} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/70 backdrop-blur-sm border border-slate-700/50">
                         <div 
                           className={`w-4 h-4 rounded-full shadow-sm bg-gradient-to-br ${gradient}`}
                           style={{ backgroundColor: color }}
                         />
-                        <span className="text-sm font-medium text-slate-600">{level} Risk</span>
+                        <span className="text-sm font-medium text-slate-300">{level} Risk</span>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-3 pt-3 border-t border-slate-200">
-                    <div className="text-xs text-slate-500 flex items-center gap-1">
+                  <div className="mt-3 pt-3 border-t border-slate-700/50">
+                    <div className="text-xs text-slate-400 flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
                       Powered by OpenStreetMap • Real geographical boundaries • Hover for details • Click for analysis
                     </div>
@@ -678,12 +733,12 @@ const ScamMap = () => {
           <div className="space-y-6">
             {/* Selected State Details */}
             {selectedState && (
-              <Card className="bg-gradient-to-br from-white via-slate-50 to-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardHeader className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-t-lg">
+              <Card className="bg-slate-800/80 border border-slate-700/60 shadow-lg hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300">
+                <CardHeader className="bg-slate-900/60 rounded-t-lg border-b border-slate-700/60">
                   <CardTitle className="flex items-center justify-between text-lg">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse" />
-                      {selectedState.stateName}
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse" />
+                      <span className="text-white">{selectedState.stateName}</span>
                     </div>
                     <Badge 
                       className={`${selectedState.riskLevel === 'Critical' ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg' : 
@@ -694,55 +749,55 @@ const ScamMap = () => {
                       {selectedState.riskLevel}
                     </Badge>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-slate-400">
                     Last updated: {selectedState.lastUpdated}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-5 p-6">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-600 font-medium">Total Cases</span>
-                      <span className="font-bold text-slate-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{selectedState.totalCases.toLocaleString()}</span>
+                      <span className="text-slate-400 font-medium">Total Cases</span>
+                      <span className="font-bold text-white">{selectedState.totalCases.toLocaleString()}</span>
                     </div>
                     <div className="relative">
                       <Progress 
                         value={Math.min(100, (selectedState.totalCases / 20000) * 100)} 
-                        className="h-3 bg-slate-200 overflow-hidden rounded-full"
+                        className="h-3 bg-slate-700 overflow-hidden rounded-full"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-30" />
                     </div>
                   </div>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-600 font-medium">Per 100k Population</span>
-                      <span className="font-bold text-slate-800 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{selectedState.populationRatio}</span>
+                      <span className="text-slate-400 font-medium">Per 100k Population</span>
+                      <span className="font-bold text-white">{selectedState.populationRatio}</span>
                     </div>
                     <div className="relative">
                       <Progress 
                         value={Math.min(100, (selectedState.populationRatio / 60) * 100)} 
-                        className="h-3 bg-slate-200 overflow-hidden rounded-full"
+                        className="h-3 bg-slate-700 overflow-hidden rounded-full"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full opacity-20" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-30" />
                     </div>
                   </div>
 
-                  <div className="space-y-3 p-4 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-100">
-                    <h4 className="font-semibold text-sm text-slate-700 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
+                  <div className="space-y-3 p-4 bg-slate-900/60 rounded-xl border border-slate-700/60">
+                    <h4 className="font-semibold text-sm text-white flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 animate-pulse" />
                       Fraud Types Breakdown
                     </h4>
                     <div className="space-y-2">
                       {[
-                        { name: 'Financial', value: selectedState.financialFraud, icon: '💳', gradient: 'from-blue-500 to-cyan-500' },
-                        { name: 'Online', value: selectedState.onlineFraud, icon: '🌐', gradient: 'from-green-500 to-emerald-500' },
-                        { name: 'Identity Theft', value: selectedState.identityTheft, icon: '🆔', gradient: 'from-purple-500 to-pink-500' },
-                        { name: 'Phishing', value: selectedState.phishing, icon: '🎣', gradient: 'from-orange-500 to-red-500' },
+                        { name: 'Financial', value: selectedState.financialFraud, icon: '💳', gradient: 'from-cyan-400 to-blue-500' },
+                        { name: 'Online', value: selectedState.onlineFraud, icon: '🌐', gradient: 'from-cyan-400 to-blue-500' },
+                        { name: 'Identity Theft', value: selectedState.identityTheft, icon: '🆔', gradient: 'from-cyan-400 to-blue-500' },
+                        { name: 'Phishing', value: selectedState.phishing, icon: '🎣', gradient: 'from-cyan-400 to-blue-500' },
                       ].map(({ name, value, icon, gradient }) => (
-                        <div key={name} className="flex justify-between items-center p-2 rounded-lg bg-white/70 border border-white/50 hover:bg-white/90 transition-all duration-200">
+                        <div key={name} className="flex justify-between items-center p-2 rounded-lg bg-slate-800/70 border border-slate-700/50 hover:bg-slate-800/90 transition-all duration-200">
                           <div className="flex items-center gap-2">
                             <span className="text-sm">{icon}</span>
-                            <span className="text-sm font-medium text-slate-600">{name}</span>
+                            <span className="text-sm font-medium text-slate-300">{name}</span>
                           </div>
                           <span className={`text-sm font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
                             {value.toLocaleString()}
@@ -752,17 +807,17 @@ const ScamMap = () => {
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-gradient-to-r from-transparent via-slate-200 to-transparent">
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-slate-50 to-white rounded-lg mb-2">
-                      <span className="text-sm font-medium text-slate-600">📈 Trend</span>
-                      <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-white/80 border border-white/50">
+                  <div className="pt-4 mt-4 border-t border-slate-700/50">
+                    <div className="flex justify-between items-center p-3 bg-slate-800/70 rounded-lg mb-2 border border-slate-700/50">
+                      <span className="text-sm font-medium text-slate-300">📈 Trend</span>
+                      <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-slate-900/60 border border-slate-700/60">
                         {getTrendIcon(selectedState.trendDirection)}
-                        <span className="text-sm capitalize font-semibold text-slate-700">{selectedState.trendDirection}</span>
+                        <span className="text-sm capitalize font-semibold text-white">{selectedState.trendDirection}</span>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg">
-                      <span className="text-sm font-medium text-slate-600">💰 Total Loss</span>
-                      <span className="font-bold text-lg bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">₹{selectedState.totalLoss} Cr</span>
+                    <div className="flex justify-between items-center p-3 bg-slate-800/70 rounded-lg border border-slate-700/50">
+                      <span className="text-sm font-medium text-slate-300">💰 Total Loss</span>
+                      <span className="font-bold text-lg bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">₹{selectedState.totalLoss} Cr</span>
                     </div>
                   </div>
                 </CardContent>
@@ -770,10 +825,10 @@ const ScamMap = () => {
             )}
 
             {/* Quick Tips Card */}
-            <Card className="bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 border border-indigo-200 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base text-indigo-800">
-                  <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
+            <Card className="bg-slate-800/80 border border-slate-700/60 shadow-lg hover:shadow-cyan-500/10 transition-all duration-300">
+              <CardHeader className="pb-3 bg-slate-900/60 rounded-t-lg border-b border-slate-700/60">
+                <CardTitle className="flex items-center gap-2 text-base text-white">
+                  <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg shadow-cyan-500/25">
                     <div className="text-white text-sm">💡</div>
                   </div>
                   Cyber Safety Tips
@@ -787,11 +842,11 @@ const ScamMap = () => {
                     { icon: '⚠️', tip: 'Be cautious of too-good offers' },
                     { icon: '📞', tip: 'Report suspicious calls to 1930' }
                   ].map(({ icon, tip }, index) => (
-                    <div key={index} className="flex items-start gap-3 p-2 rounded-lg bg-white/70 hover:bg-white/90 transition-all duration-200">
+                    <div key={index} className="flex items-start gap-3 p-2 rounded-lg bg-slate-700/70 hover:bg-slate-700/90 transition-all duration-200 border border-slate-600/40">
                       <div className="text-sm">
                         {icon}
                       </div>
-                      <span className="text-xs text-slate-600 leading-relaxed font-medium">{tip}</span>
+                      <span className="text-xs text-slate-300 leading-relaxed font-medium">{tip}</span>
                     </div>
                   ))}
                 </div>
@@ -799,10 +854,10 @@ const ScamMap = () => {
             </Card>
 
             {/* Top States */}
-            <Card className="bg-gradient-to-br from-white via-slate-50 to-white border border-slate-200 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-slate-800">
-                  <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
+            <Card className="bg-slate-800/80 border border-slate-700/60 shadow-lg hover:shadow-cyan-500/10 transition-all duration-300">
+              <CardHeader className="bg-slate-900/60 rounded-t-lg border-b border-slate-700/60">
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg shadow-cyan-500/25">
                     <BarChart3 className="h-4 w-4 text-white" />
                   </div>
                   Top States by Cases
@@ -813,21 +868,21 @@ const ScamMap = () => {
                   {(topStates || []).map((state, index) => (
                     <div 
                       key={state.stateCode}
-                      className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-white to-slate-50 border border-white/50 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+                      className="flex items-center justify-between p-3 rounded-xl bg-slate-700/70 hover:bg-slate-700/90 border border-slate-600/40 cursor-pointer hover:shadow-md hover:shadow-cyan-500/10 hover:scale-[1.02] transition-all duration-200"
                       onClick={() => setSelectedState(state)}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold text-white ${
-                          index === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-lg' :
-                          index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-500 shadow-lg' :
-                          index === 2 ? 'bg-gradient-to-r from-orange-600 to-red-600 shadow-lg' :
-                          'bg-gradient-to-r from-slate-400 to-slate-500'
+                        <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold text-white shadow-cyan-500/25 ${
+                          index === 0 ? 'bg-gradient-to-r from-cyan-400 to-blue-500' :
+                          index === 1 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 opacity-80' :
+                          index === 2 ? 'bg-gradient-to-r from-cyan-500 to-blue-600 opacity-60' :
+                          'bg-gradient-to-r from-cyan-500 to-blue-600 opacity-40'
                         }`}>
                           {index + 1}
                         </div>
                         <div>
-                          <p className="font-semibold text-sm text-slate-800">{state.stateName}</p>
-                          <p className="text-xs text-slate-500 font-medium">
+                          <p className="font-semibold text-sm text-white">{state.stateName}</p>
+                          <p className="text-xs text-slate-300 font-medium">
                             {state.totalCases.toLocaleString()} cases
                           </p>
                         </div>
@@ -886,53 +941,56 @@ const ScamMap = () => {
         {/* Tabs for different views */}
         <div className="mt-8">
           <Tabs defaultValue="analytics" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-white/60 backdrop-blur-sm border border-white/20 shadow-lg p-1">
-              <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white transition-all duration-200">📈 Analytics</TabsTrigger>
-              <TabsTrigger value="insights" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-200">🔍 Insights</TabsTrigger>
-              <TabsTrigger value="sources" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-200">📋 Sources</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 bg-slate-800/80 backdrop-blur-sm border border-slate-700/60 shadow-lg p-1">
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-cyan-500/25 transition-all duration-200 text-slate-300">📈 Analytics</TabsTrigger>
+              <TabsTrigger value="insights" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-cyan-500/25 transition-all duration-200 text-slate-300">🔍 Insights</TabsTrigger>
+              <TabsTrigger value="sources" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-cyan-500/25 transition-all duration-200 text-slate-300">📋 Sources</TabsTrigger>
             </TabsList>
 
             {/* Analytics Tab */}
             <TabsContent value="analytics" className="mt-6">
               <div className="space-y-6">
-                <KeyMetrics aggregatedStats={aggregatedStats} scamData={scamData} />
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <FraudTypesChart aggregatedStats={aggregatedStats} />
-                  <TopStatesChart topStates={topStates} />
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <RiskLevelSummary scamData={scamData} />
-                  <div className="lg:col-span-2">
-                    <TrendAnalysis scamData={scamData} />
-                  </div>
-                </div>
+                <Card className="bg-slate-800/80 border border-slate-700/60 shadow-lg">
+                  <CardHeader className="bg-slate-900/60 rounded-t-lg border-b border-slate-700/60">
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg shadow-cyan-500/25">
+                        <BarChart3 className="h-5 w-5 text-white" />
+                      </div>
+                      Analytics Dashboard
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <p className="text-slate-400">
+                      Comprehensive analytics and insights about cyber crime trends across India.
+                      This section provides detailed statistical analysis and data visualizations.
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
             {/* Insights Tab */}
             <TabsContent value="insights" className="mt-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-orange-500" />
+                <Card className="bg-slate-800/80 border border-slate-700/60">
+                  <CardHeader className="bg-slate-900/60 rounded-t-lg border-b border-slate-700/60">
+                    <CardTitle className="flex items-center gap-2 text-white">
+                      <AlertTriangle className="h-5 w-5 text-cyan-400" />
                       Key Insights
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-400">
-                      <h4 className="font-semibold text-red-800 mb-2">High Risk Alert</h4>
-                      <p className="text-red-700 text-sm">
+                    <div className="p-4 bg-red-900/30 rounded-lg border-l-4 border-red-400">
+                      <h4 className="font-semibold text-red-300 mb-2">High Risk Alert</h4>
+                      <p className="text-red-200 text-sm">
                         Delhi shows the highest cyber fraud density with critical risk levels, 
                         requiring immediate attention and enhanced security measures.
                       </p>
                     </div>
                     
-                    <div className="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-                      <h4 className="font-semibold text-yellow-800 mb-2">Emerging Trend</h4>
-                      <p className="text-yellow-700 text-sm">
+                    <div className="p-4 bg-yellow-900/30 rounded-lg border-l-4 border-yellow-400">
+                      <h4 className="font-semibold text-yellow-300 mb-2">Emerging Trend</h4>
+                      <p className="text-yellow-200 text-sm">
                         Financial fraud cases have increased significantly in tech hubs like Bengaluru 
                         and Hyderabad, indicating targeted attacks on IT professionals.
                       </p>
