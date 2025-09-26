@@ -4,6 +4,7 @@ import FIRForm from "@/components/FIRForm";
 import FIRResult from "@/components/FIRResult";
 import FIRPreview from "@/components/FIRPreview";
 import FIRProcessGuide from "@/components/FIRProcessGuide";
+import FIRProcessFlow from "@/components/FIRProcessFlow";
 
 interface FormData {
   name: string;
@@ -83,6 +84,11 @@ const FirGenerator = () => {
               </div>
             </div>
             
+            {/* Process Flow Component */}
+            <div className="w-full mb-12">
+              <FIRProcessFlow currentStep={2} />
+            </div>
+
             {/* Full-width Process Guide */}
             {formData.state && (
               <div className="w-full">

@@ -1,0 +1,388 @@
+.fir-process-flow {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.fir-process-flow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Header Styles */
+.flow-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.flow-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.flow-subtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Steps Container */
+.steps-container {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  z-index: 1;
+}
+
+/* Step Positioning - Zig-zag Layout */
+.step-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.step-1 { justify-content: flex-start; }
+.step-2 { justify-content: flex-end; }
+.step-3 { justify-content: flex-start; }
+.step-4 { justify-content: flex-end; }
+
+/* Step Card */
+.step-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Number Badge */
+.step-badge {
+  position: absolute;
+  top: -15px;
+  left: 2rem;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.step-badge span {
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+/* Step Icon */
+.step-icon {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.step-icon span {
+  font-size: 2.5rem;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Screenshot Container */
+.screenshot-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.screenshot {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.step-card:hover .screenshot {
+  transform: scale(1.05);
+}
+
+.screenshot-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.step-card:hover .screenshot-overlay {
+  opacity: 1;
+}
+
+/* Step Content */
+.step-content {
+  text-align: center;
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+}
+
+.step-description {
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Portal Highlight */
+.portal-highlight {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.highlight-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.highlight-text {
+  color: white;
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Curved Arrows */
+.curved-arrow {
+  position: absolute;
+  width: 120px;
+  height: 80px;
+  z-index: 0;
+}
+
+.arrow-1 {
+  top: 50%;
+  right: -60px;
+  transform: translateY(-50%) rotate(15deg);
+}
+
+.arrow-2 {
+  top: 50%;
+  left: -60px;
+  transform: translateY(-50%) rotate(-15deg) scaleX(-1);
+}
+
+.arrow-3 {
+  top: 50%;
+  right: -60px;
+  transform: translateY(-50%) rotate(15deg);
+}
+
+.arrow-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.2));
+}
+
+/* Progress Tracker */
+.progress-tracker {
+  margin-top: 4rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.progress-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.progress-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.progress-bar-container {
+  position: relative;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+  border-radius: 4px;
+  width: 0%;
+  transition: width 2s ease;
+  animation: progressAnimation 3s ease-in-out infinite;
+}
+
+@keyframes progressAnimation {
+  0% { width: 0%; }
+  50% { width: 25%; }
+  100% { width: 0%; }
+}
+
+.progress-markers {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.progress-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.marker-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.progress-marker.active .marker-dot {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  transform: scale(1.2);
+}
+
+.marker-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.progress-marker.active .marker-label {
+  color: #3B82F6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .fir-process-flow {
+    padding: 2rem 1rem;
+  }
+  
+  .flow-title {
+    font-size: 2rem;
+  }
+  
+  .steps-container {
+    gap: 2rem;
+  }
+  
+  .step-1, .step-2, .step-3, .step-4 {
+    justify-content: center;
+  }
+  
+  .curved-arrow {
+    display: none;
+  }
+  
+  .step-card {
+    max-width: 100%;
+  }
+  
+  .progress-tracker {
+    margin-top: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .progress-markers {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .flow-title {
+    font-size: 1.75rem;
+  }
+  
+  .step-card {
+    padding: 1.5rem;
+  }
+  
+  .step-icon span {
+    font-size: 2rem;
+  }
+  
+  .screenshot {
+    height: 150px;
+  }
+}

@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { firService } from "@/services/firService";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, CheckCircle, RefreshCw, ExternalLink, MapPin, FileText, ChevronRight, AlertTriangle } from "lucide-react";
+import FIRProcessFlow from "./FIRProcessFlow";
 
 interface FormData {
   name: string;
@@ -459,10 +460,10 @@ Please provide only the rephrased version, maintaining the same factual content 
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">📝 Fill FIR Details</CardTitle>
-      </CardHeader>
-      <CardContent>
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">📝 Fill FIR Details</CardTitle>
+        </CardHeader>
+        <CardContent>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
