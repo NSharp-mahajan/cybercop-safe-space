@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Shield, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
 
@@ -53,22 +54,36 @@ const ResetPassword = () => {
     }
   }, [searchParams, toast]);
 
+  const validatePassword = (pwd: string) => {
+    const minLength = pwd.length >= 8;
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasLower = /[a-z]/.test(pwd);
+    const hasNumber = /\d/.test(pwd);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+    
+    return { minLength, hasUpper, hasLower, hasNumber, hasSpecial };
+  };
+
+  const passwordChecks = validatePassword(password);
+  const isPasswordValid = Object.values(passwordChecks).every(check => check);
+  const passwordsMatch = password === confirmPassword && password.length > 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
+    
+    if (!isPasswordValid) {
       toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
+        title: "Invalid Password",
+        description: "Please ensure your password meets all requirements.",
         variant: "destructive",
       });
       return;
     }
 
-    if (password.length < 6) {
+    if (!passwordsMatch) {
       toast({
-        title: "Weak Password",
-        description: "Password must be at least 6 characters long.",
+        title: "Passwords Don't Match",
+        description: "Please ensure both passwords are identical.",
         variant: "destructive",
       });
       return;
@@ -129,7 +144,7 @@ const ResetPassword = () => {
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="p-4 rounded-full bg-red-100">
-                <AlertCircle className="h-12 w-12 text-red-600" />
+                <XCircle className="h-12 w-12 text-red-600" />
               </div>
             </div>
             <CardTitle className="text-2xl">Invalid Reset Link</CardTitle>
@@ -156,7 +171,7 @@ const ResetPassword = () => {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="p-4 rounded-full bg-primary/10">
-              <Lock className="h-12 w-12 text-primary" />
+              <Shield className="h-12 w-12 text-primary" />
             </div>
           </div>
           <CardTitle className="text-2xl">Set New Password</CardTitle>
@@ -170,16 +185,14 @@ const ResetPassword = () => {
             <div className="space-y-2">
               <Label htmlFor="new-password">New Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="new-password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder="Enter new password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10"
+                  className="pr-10"
                   required
-                  minLength={6}
                   disabled={isLoading}
                 />
                 <button
@@ -193,41 +206,74 @@ const ResetPassword = () => {
               </div>
             </div>
 
+            {/* Password Requirements */}
+            {password && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Password Requirements:</Label>
+                <div className="space-y-1">
+                  {[
+                    { check: passwordChecks.minLength, text: "At least 8 characters" },
+                    { check: passwordChecks.hasUpper, text: "One uppercase letter" },
+                    { check: passwordChecks.hasLower, text: "One lowercase letter" },
+                    { check: passwordChecks.hasNumber, text: "One number" },
+                    { check: passwordChecks.hasSpecial, text: "One special character" },
+                  ].map((requirement, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      {requirement.check ? (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-red-500" />
+                      )}
+                      <span className={`text-sm ${requirement.check ? 'text-green-600' : 'text-red-600'}`}>
+                        {requirement.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm New Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="confirm-password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10"
+                  className="pr-10"
                   required
                   disabled={isLoading}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                  disabled={isLoading}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
+              {confirmPassword && (
+                <div className="flex items-center space-x-2">
+                  {passwordsMatch ? (
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-500" />
+                  )}
+                  <span className={`text-sm ${passwordsMatch ? 'text-green-600' : 'text-red-600'}`}>
+                    {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Password strength indicator */}
-            <div className="space-y-2">
-              <div className="text-xs text-muted-foreground">
-                Password requirements:
-              </div>
-              <div className="space-y-1">
-                <div className={`flex items-center text-xs ${password.length >= 6 ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  At least 6 characters
-                </div>
-                <div className={`flex items-center text-xs ${password === confirmPassword && password.length > 0 ? 'text-green-600' : 'text-muted-foreground'}`}>
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Passwords match
-                </div>
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading || !isPasswordValid || !passwordsMatch}
+            >
               {isLoading ? "Updating Password..." : "Update Password"}
             </Button>
 

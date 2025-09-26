@@ -9,8 +9,8 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import Layout from "./components/Layout/Layout";
 import Landing from "./pages/Landing";
 import FirGenerator from "./pages/FirGenerator";
-import OcrFraudDetection from "./pages/OcrFraudDetection";
 import SecurityToolsHub from "./pages/SecurityToolsHub";
+import AIDetectionHub from "./pages/AIDetectionHub";
 import ScamLibrary from "./pages/ScamLibrary";
 import LawLearning from "./pages/LawLearning";
 import Dashboard from "./pages/Dashboard";
@@ -19,7 +19,6 @@ import CommunityReports from "./pages/CommunityReports";
 import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
 import FraudNews from "./pages/FraudNews";
-import ScamMap from '@/pages/ScamMapAPI';
 import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
 import Subscription from "./pages/Subscription";
@@ -46,13 +45,12 @@ const App = () => {
               <Route index element={<Landing />} />
               <Route path="fir-generator" element={<FirGenerator />} />
               <Route path="security-tools" element={<SecurityToolsHub />} />
-              <Route path="ocr-fraud" element={<OcrFraudDetection />} />
+              <Route path="ai-detection" element={<AIDetectionHub />} />
               <Route path="scam-library" element={<ScamLibrary />} />
               <Route path="law-learning" element={<LawLearning />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="chat" element={<Chat />} />
               <Route path="report-scam" element={<ReportScam />} />
-              <Route path="scam-map" element={<ScamMap />} />
               <Route path="community-reports" element={<CommunityReports />} />
               <Route path="fraud-news" element={<FraudNews />} />
               <Route path="subscription" element={<Subscription />} />

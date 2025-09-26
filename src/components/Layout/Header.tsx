@@ -24,7 +24,8 @@ import {
   Search,
   Home,
   Newspaper,
-  KeyRound
+  KeyRound,
+  Phone
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
 import { UserMenu } from "@/components/auth/UserMenu";
@@ -34,15 +35,14 @@ const Header = () => {
   const location = useLocation();
 
   const securityTools = [
-    { name: "Security Tools Hub", href: "/security-tools", icon: KeyRound, desc: "Password checker, URL scanner & fraud detector" },
-    { name: "OCR Fraud Detection", href: "/ocr-fraud", icon: ScanText, desc: "Analyze documents for fraud" },
+    { name: "Security Tools Hub", href: "/security-tools", icon: KeyRound, desc: "Password checker & URL scanner" },
+    { name: "AI Detection Hub", href: "/ai-detection", icon: ScanText, desc: "Message, document & voice fraud detection" },
     { name: "Report Scam", href: "/report-scam", icon: AlertTriangle, desc: "Report suspicious activities" },
   ];
 
   const resources = [
     { name: "Fraud News", href: "/fraud-news", icon: Newspaper, desc: "Latest cybercrime news updates" },
     { name: "Scam Library", href: "/scam-library", icon: BookOpen, desc: "Browse known scams" },
-    { name: "Scam Map", href: "/scam-map", icon: Search, desc: "View cyber fraud statistics on India map" },
     { name: "Community Reports", href: "/community-reports", icon: Users, desc: "View community reports" },
     { name: "Law Learning", href: "/law-learning", icon: BookOpen, desc: "Learn cybersecurity laws" },
   ];
@@ -105,7 +105,7 @@ const Header = () => {
                               Security Tools Hub
                             </div>
                             <p className="text-sm leading-tight text-muted-foreground">
-                              All-in-one security toolkit with password checker, URL scanner & fraud detector
+                              Essential security tools for password protection and URL verification
                             </p>
                           </Link>
                         </NavigationMenuLink>
