@@ -14,7 +14,11 @@ import {
   Globe,
   KeyRound,
   Scan,
-  Loader2
+  Loader2,
+  Mail,
+  Info,
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +28,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -37,10 +42,40 @@ interface PasswordCriteria {
   noCommon: boolean;
 }
 
+interface BreachResult {
+  compromised: boolean;
+  breachCount?: number;
+  breaches?: Array<{
+    name: string;
+    title?: string;
+    domain?: string;
+    date: string;
+    pwnCount?: number;
+    description: string;
+    dataTypes?: string[];
+    isVerified?: boolean;
+    isSensitive?: boolean;
+    logoPath?: string;
+  }>;
+  suggestions?: string[];
+}
+
 // URL Checker Interface
 interface UrlResult {
   status: 'safe' | 'suspicious' | 'malicious';
   cached?: boolean;
+  score?: number;
+  details?: {
+    checks: {
+      patternAnalysis: { passed: boolean; score: number; reason?: string };
+      domainReputation: { passed: boolean; score: number; reason?: string };
+      sslCertificate: { passed: boolean; score: number; reason?: string };
+      urlStructure: { passed: boolean; score: number; reason?: string };
+      contentAnalysis: { passed: boolean; score: number; reason?: string };
+    };
+    warnings: string[];
+    recommendations: string[];
+  };
 }
 
 
@@ -61,6 +96,13 @@ const SecurityToolsHub = () => {
     noCommon: false,
   });
   const [generatedPassword, setGeneratedPassword] = useState("");
+  const [improvedPassword, setImprovedPassword] = useState("");
+  
+  // Breach Check State
+  const [email, setEmail] = useState("");
+  const [isCheckingBreach, setIsCheckingBreach] = useState(false);
+  const [passwordBreachResult, setPasswordBreachResult] = useState<BreachResult | null>(null);
+  const [emailBreachResult, setEmailBreachResult] = useState<BreachResult | null>(null);
 
   // URL Checker State
   const [url, setUrl] = useState("");
@@ -123,6 +165,150 @@ const SecurityToolsHub = () => {
     setGeneratedPassword(shuffled);
   };
 
+  // Check if password has been breached
+  const checkPasswordBreach = async () => {
+    if (!password.trim()) return;
+    
+    setIsCheckingBreach(true);
+    setPasswordBreachResult(null);
+    
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase.functions.invoke('breach-check', {
+        body: {
+          type: 'password',
+          value: password,
+          user_id: user.user?.id,
+        },
+      });
+
+      if (error) throw error;
+      
+      setPasswordBreachResult(data);
+      
+      if (data.compromised) {
+        toast({
+          title: "⚠️ Password Compromised!",
+          description: `This password has been found in ${data.breachCount?.toLocaleString()} data breaches. Please use a different password.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "✅ Password Not Found in Breaches",
+          description: "This password hasn't been found in any known data breaches.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error checking password breach:', error);
+      toast({
+        title: "Error",
+        description: "Failed to check password breach status.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingBreach(false);
+    }
+  };
+  
+  // Check if email has been breached
+  const checkEmailBreach = async () => {
+    if (!email.trim()) return;
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsCheckingBreach(true);
+    setEmailBreachResult(null);
+    
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase.functions.invoke('breach-check', {
+        body: {
+          type: 'email',
+          value: email,
+          user_id: user.user?.id,
+        },
+      });
+
+      if (error) throw error;
+      
+      setEmailBreachResult(data);
+      
+      if (data.compromised) {
+        toast({
+          title: "⚠️ Email Found in Data Breaches",
+          description: `This email has been found in ${data.breachCount} data breach${data.breachCount > 1 ? 'es' : ''}. Check the details below.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "✅ Email Not Found in Breaches",
+          description: "This email hasn't been found in any known data breaches.",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error checking email breach:', error);
+      toast({
+        title: "Error",
+        description: "Failed to check email breach status.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCheckingBreach(false);
+    }
+  };
+  
+  // Improve existing password
+  const improvePassword = () => {
+    if (!password) return;
+    
+    let improved = password;
+    
+    // Add complexity based on what's missing
+    if (!/[A-Z]/.test(improved)) {
+      // Capitalize first letter or add random uppercase
+      improved = improved.charAt(0).toUpperCase() + improved.slice(1);
+    }
+    
+    if (!/\d/.test(improved)) {
+      // Add a random number at a random position
+      const num = Math.floor(Math.random() * 10);
+      const pos = Math.floor(Math.random() * improved.length);
+      improved = improved.slice(0, pos) + num + improved.slice(pos);
+    }
+    
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(improved)) {
+      // Add a special character
+      const specials = "!@#$%^&*";
+      const special = specials[Math.floor(Math.random() * specials.length)];
+      improved += special;
+    }
+    
+    // Ensure minimum length
+    while (improved.length < 12) {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      improved += chars[Math.floor(Math.random() * chars.length)];
+    }
+    
+    // Replace common patterns
+    improved = improved.replace(/password/gi, 'P@ssw0rd');
+    improved = improved.replace(/admin/gi, '@dm1n');
+    improved = improved.replace(/123456/g, '1@3$5^');
+    improved = improved.replace(/qwerty/gi, 'Qw3r7y!');
+    
+    setImprovedPassword(improved);
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       toast({
@@ -165,6 +351,8 @@ const SecurityToolsHub = () => {
       setUrlResult({
         status: data.status,
         cached: data.cached,
+        score: data.score,
+        details: data.details,
       });
 
       if (data.status === 'malicious') {
@@ -332,6 +520,257 @@ const SecurityToolsHub = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Breach Check for Password */}
+                  <Separator />
+                  <div className="space-y-3">
+                    <Label>Security Breach Check</Label>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={checkPasswordBreach}
+                        disabled={!password || isCheckingBreach}
+                        className="transition-glow hover:glow-primary"
+                      >
+                        {isCheckingBreach ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Shield className="h-4 w-4" />
+                        )}
+                        {isCheckingBreach ? "Checking..." : "Check Password Breach"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={improvePassword}
+                        disabled={!password}
+                        className="transition-glow hover:glow-primary"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Improve Password
+                      </Button>
+                    </div>
+
+                    {passwordBreachResult && (
+                      <div
+                        className={`p-3 rounded-lg border ${
+                          passwordBreachResult.compromised
+                            ? "bg-red-50 border-red-200"
+                            : "bg-green-50 border-green-200"
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          {passwordBreachResult.compromised ? (
+                            <XCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                          )}
+                          <div className="text-sm">
+                            {passwordBreachResult.compromised ? (
+                              <>
+                                <div className="font-medium">
+                                  Password found in {passwordBreachResult.breachCount?.toLocaleString()}{" "}
+                                  breaches
+                                </div>
+                                <div className="text-red-700">
+                                  Do not use this password. Generate a new one below.
+                                </div>
+                              </>
+                            ) : (
+                              <div className="font-medium">Password not found in known breaches</div>
+                            )}
+
+                            {passwordBreachResult.suggestions &&
+                              passwordBreachResult.suggestions.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  <div className="text-xs font-medium">Suggestions to strengthen:</div>
+                                  <ul className="list-disc ml-5 text-xs text-muted-foreground">
+                                    {passwordBreachResult.suggestions.map((s, idx) => (
+                                      <li key={idx}>{s}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {improvedPassword && (
+                      <div className="space-y-2">
+                        <Label>Improved Password Suggestion</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={improvedPassword}
+                            readOnly
+                            className="font-mono text-sm bg-muted/50"
+                          />
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => copyToClipboard(improvedPassword)}
+                            className="shrink-0 transition-glow hover:glow-primary"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Info className="h-3 w-3" />
+                          Use this as inspiration and store it in a password manager.
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Email Breach Check */}
+                    <Separator />
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Check Email Breaches</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="you@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          onKeyPress={(e) => e.key === "Enter" && checkEmailBreach()}
+                          className="transition-glow focus:glow-primary"
+                        />
+                        <Button
+                          onClick={checkEmailBreach}
+                          disabled={!email || isCheckingBreach}
+                          className="transition-glow hover:glow-primary"
+                        >
+                          {isCheckingBreach ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Mail className="h-4 w-4" />
+                          )}
+                          {isCheckingBreach ? "Checking..." : "Check Email"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {emailBreachResult && (
+                      <div className="space-y-3">
+                        <div
+                          className={`p-3 rounded-lg border ${
+                            emailBreachResult.compromised
+                              ? "bg-yellow-50 border-yellow-200"
+                              : "bg-green-50 border-green-200"
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            {emailBreachResult.compromised ? (
+                              <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
+                            ) : (
+                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                            )}
+                            <div className="text-sm">
+                              {emailBreachResult.compromised ? (
+                                <div className="font-medium">
+                                  Email found in {emailBreachResult.breachCount} breaches
+                                </div>
+                              ) : (
+                                <div className="font-medium">Email not found in known breaches</div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {emailBreachResult.breaches && emailBreachResult.breaches.length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <Label>Breached Websites (Top {Math.min(10, emailBreachResult.breaches.length)})</Label>
+                              <Badge variant="destructive">{emailBreachResult.breachCount} Total Breaches</Badge>
+                            </div>
+                            <div className="space-y-3 max-h-96 overflow-auto p-3 border rounded-lg bg-muted/20">
+                              {emailBreachResult.breaches.slice(0, 10).map((breach, idx) => (
+                                <div key={idx} className="p-4 rounded-lg bg-white border shadow-sm hover:shadow-md transition-shadow">
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <h4 className="font-semibold text-base">{breach.title || breach.name}</h4>
+                                        {breach.isVerified && (
+                                          <Badge variant="secondary" className="text-xs">
+                                            <CheckCircle className="h-3 w-3 mr-1" />
+                                            Verified
+                                          </Badge>
+                                        )}
+                                        {breach.isSensitive && (
+                                          <Badge variant="destructive" className="text-xs">
+                                            <AlertTriangle className="h-3 w-3 mr-1" />
+                                            Sensitive
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      {breach.domain && (
+                                        <div className="text-sm text-muted-foreground mt-1">
+                                          <Globe className="h-3 w-3 inline mr-1" />
+                                          {breach.domain}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="text-sm font-medium text-muted-foreground">
+                                        {new Date(breach.date).toLocaleDateString()}
+                                      </div>
+                                      {breach.pwnCount && (
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                          {breach.pwnCount.toLocaleString()} accounts
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <p className="text-sm text-muted-foreground mb-2">
+                                    {breach.description.length > 200 
+                                      ? breach.description.substring(0, 200) + '...' 
+                                      : breach.description
+                                    }
+                                  </p>
+                                  
+                                  {breach.dataTypes && breach.dataTypes.length > 0 && (
+                                    <div className="mt-3">
+                                      <div className="text-xs font-medium mb-1">Compromised data:</div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {breach.dataTypes.map((dataType, dtIdx) => (
+                                          <Badge key={dtIdx} variant="outline" className="text-xs">
+                                            {dataType}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            
+                            {emailBreachResult.breaches.length > 10 && (
+                              <Alert className="bg-yellow-50 border-yellow-200">
+                                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                <AlertDescription className="text-yellow-800">
+                                  Showing top 10 of {emailBreachResult.breaches.length} total breaches. 
+                                  Your email has been exposed in {emailBreachResult.breaches.length - 10} additional breaches.
+                                </AlertDescription>
+                              </Alert>
+                            )}
+                            
+                            <Alert className="bg-blue-50 border-blue-200">
+                              <Shield className="h-4 w-4 text-blue-600" />
+                              <AlertDescription className="text-blue-800">
+                                <strong>What to do:</strong>
+                                <ul className="list-disc ml-5 mt-1">
+                                  <li>Change passwords on all affected sites immediately</li>
+                                  <li>Enable two-factor authentication wherever possible</li>
+                                  <li>Use unique passwords for each service</li>
+                                  <li>Monitor your accounts for suspicious activity</li>
+                                  <li>Consider using a password manager</li>
+                                </ul>
+                              </AlertDescription>
+                            </Alert>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
 
@@ -458,10 +897,18 @@ const SecurityToolsHub = () => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">Scan Results</h3>
-                        <Badge className={`${getUrlStatusColor(urlResult.status)} text-white`}>
-                          {getUrlStatusIcon(urlResult.status)}
-                          <span className="ml-1 capitalize">{urlResult.status}</span>
-                        </Badge>
+                        <div className="flex items-center gap-3">
+                          {urlResult.score !== undefined && (
+                            <div className="text-right">
+                              <div className="text-2xl font-bold">{urlResult.score}/100</div>
+                              <div className="text-xs text-muted-foreground">Safety Score</div>
+                            </div>
+                          )}
+                          <Badge className={`${getUrlStatusColor(urlResult.status)} text-white`}>
+                            {getUrlStatusIcon(urlResult.status)}
+                            <span className="ml-1 capitalize">{urlResult.status}</span>
+                          </Badge>
+                        </div>
                       </div>
 
                       <div className="p-4 rounded-lg border">
@@ -495,42 +942,109 @@ const SecurityToolsHub = () => {
                         </div>
                       </div>
 
+                      {/* Detailed Analysis */}
+                      {urlResult.details && (
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Detailed Analysis</h4>
+                          <div className="grid gap-3">
+                            {Object.entries(urlResult.details.checks).map(([checkName, check]) => {
+                              const displayNames: Record<string, string> = {
+                                patternAnalysis: "Pattern Analysis",
+                                domainReputation: "Domain Reputation",
+                                sslCertificate: "SSL Certificate",
+                                urlStructure: "URL Structure",
+                                contentAnalysis: "Content Analysis"
+                              };
+                              
+                              return (
+                                <div key={checkName} className="p-3 rounded-lg bg-muted/30 border">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex items-start gap-2">
+                                      {check.passed ? (
+                                        <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                                      ) : (
+                                        <XCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                                      )}
+                                      <div>
+                                        <div className="font-medium text-sm">{displayNames[checkName] || checkName}</div>
+                                        {check.reason && (
+                                          <div className="text-xs text-muted-foreground mt-1">{check.reason}</div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <Badge variant={check.passed ? "default" : "destructive"} className="text-xs">
+                                      {check.score} pts
+                                    </Badge>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          
+                          {/* Warnings */}
+                          {urlResult.details.warnings && urlResult.details.warnings.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="font-medium text-sm">Warnings</h5>
+                              {urlResult.details.warnings.map((warning, index) => (
+                                <Alert key={index} className="bg-yellow-50 border-yellow-200">
+                                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                  <AlertDescription className="text-yellow-800 text-sm">
+                                    {warning}
+                                  </AlertDescription>
+                                </Alert>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       {/* Security Recommendations */}
                       <div className="space-y-3">
                         <Label>Security Recommendations</Label>
                         <div className="space-y-2">
-                          {urlResult.status === 'safe' && [
-                            "Verify the website's SSL certificate before entering sensitive data",
-                            "Check the URL spelling for any subtle misspellings",
-                            "Be cautious of unsolicited links, even from safe domains"
-                          ].map((rec, index) => (
-                            <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
-                              <span className="text-sm text-green-700">{rec}</span>
-                            </div>
-                          ))}
-                          
-                          {urlResult.status === 'suspicious' && [
-                            "Do not enter personal or financial information",
-                            "Verify the legitimacy through official channels",
-                            "Use antivirus software before proceeding"
-                          ].map((rec, index) => (
-                            <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-                              <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                              <span className="text-sm text-yellow-700">{rec}</span>
-                            </div>
-                          ))}
-                          
-                          {urlResult.status === 'malicious' && [
-                            "Do not visit this website under any circumstances",
-                            "Block this URL in your browser and security software",
-                            "Report this URL to cybersecurity authorities"
-                          ].map((rec, index) => (
-                            <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
-                              <XCircle className="h-4 w-4 text-red-500 mt-0.5" />
-                              <span className="text-sm text-red-700">{rec}</span>
-                            </div>
-                          ))}
+                          {urlResult.details?.recommendations && urlResult.details.recommendations.length > 0 ? (
+                            urlResult.details.recommendations.map((rec, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                <Shield className="h-4 w-4 text-blue-500 mt-0.5" />
+                                <span className="text-sm text-blue-700">{rec}</span>
+                              </div>
+                            ))
+                          ) : (
+                            <>
+                              {urlResult.status === 'safe' && [
+                                "Verify the website's SSL certificate before entering sensitive data",
+                                "Check the URL spelling for any subtle misspellings",
+                                "Be cautious of unsolicited links, even from safe domains"
+                              ].map((rec, index) => (
+                                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                                  <span className="text-sm text-green-700">{rec}</span>
+                                </div>
+                              ))}
+                              
+                              {urlResult.status === 'suspicious' && [
+                                "Do not enter personal or financial information",
+                                "Verify the legitimacy through official channels",
+                                "Use antivirus software before proceeding"
+                              ].map((rec, index) => (
+                                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                                  <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
+                                  <span className="text-sm text-yellow-700">{rec}</span>
+                                </div>
+                              ))}
+                              
+                              {urlResult.status === 'malicious' && [
+                                "Do not visit this website under any circumstances",
+                                "Block this URL in your browser and security software",
+                                "Report this URL to cybersecurity authorities"
+                              ].map((rec, index) => (
+                                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
+                                  <XCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                                  <span className="text-sm text-red-700">{rec}</span>
+                                </div>
+                              ))}
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
