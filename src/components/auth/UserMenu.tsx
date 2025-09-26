@@ -6,10 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { AuthModal } from "./AuthModal";
 
 export const UserMenu = () => {
   const { user, loading, signOut } = useAuth();
+  const { getCurrentPlan } = useSubscription();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'signin' | 'signup'>('signin');
 
@@ -71,6 +73,7 @@ export const UserMenu = () => {
   const userName = user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
   const userEmail = user.email || '';
   const avatarUrl = user.user_metadata?.avatar_url;
+  const currentPlan = getCurrentPlan();
 
   return (
     <DropdownMenu>
@@ -97,13 +100,32 @@ export const UserMenu = () => {
         
         <DropdownMenuSeparator />
         
+        {/* Pro Dashboard for Pro users */}
+        {currentPlan && currentPlan.name !== 'Free' && (
+          <DropdownMenuItem asChild>
+            <Link to="/pro-dashboard" className="flex items-center">
+              <Crown className="mr-2 h-4 w-4 text-yellow-500" />
+              <span>Pro Dashboard</span>
+              <Badge className="ml-auto text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
+                ✨ Pro
+              </Badge>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
         {/* Subscription Status */}
         <DropdownMenuItem asChild>
           <Link to="/subscription" className="flex items-center">
             <Crown className="mr-2 h-4 w-4" />
             <span>Subscription</span>
-            <Badge variant="secondary" className="ml-auto text-xs">
-              Free
+            <Badge 
+              variant={currentPlan?.name === 'Free' ? "secondary" : "default"} 
+              className={`ml-auto text-xs ${
+                currentPlan?.name === 'Pro' ? 'bg-blue-500 text-white' :
+                currentPlan?.name === 'Enterprise' ? 'bg-purple-500 text-white' : ''
+              }`}
+            >
+              {currentPlan?.name || 'Free'}
             </Badge>
           </Link>
         </DropdownMenuItem>
