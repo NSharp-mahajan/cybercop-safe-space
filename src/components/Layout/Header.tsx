@@ -35,9 +35,8 @@ const Header = () => {
   const location = useLocation();
 
   const securityTools = [
-    { name: "Security Tools Hub", href: "/security-tools", icon: KeyRound, desc: "Password checker, URL scanner & fraud detector" },
-    { name: "OCR Fraud Detection", href: "/ocr-fraud", icon: ScanText, desc: "Analyze documents for fraud" },
-    { name: "Voice Scam Detector", href: "/voice-scam-detector", icon: Phone, desc: "Analyze call recordings for scams" },
+    { name: "Security Tools Hub", href: "/security-tools", icon: KeyRound, desc: "Password checker & URL scanner" },
+    { name: "AI Detection Hub", href: "/ai-detection", icon: ScanText, desc: "Message, document & voice fraud detection" },
     { name: "Report Scam", href: "/report-scam", icon: AlertTriangle, desc: "Report suspicious activities" },
   ];
 
@@ -106,7 +105,7 @@ const Header = () => {
                               Security Tools Hub
                             </div>
                             <p className="text-sm leading-tight text-muted-foreground">
-                              All-in-one security toolkit with password checker, URL scanner & fraud detector
+                              Essential security tools for password protection and URL verification
                             </p>
                           </Link>
                         </NavigationMenuLink>

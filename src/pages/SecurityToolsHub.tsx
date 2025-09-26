@@ -11,13 +11,10 @@ import {
   Shield,
   ShieldCheck,
   ShieldX,
-  MessageSquare,
   Globe,
   KeyRound,
   Scan,
-  Loader2,
-  Download,
-  Trash2
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,9 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -48,21 +43,6 @@ interface UrlResult {
   cached?: boolean;
 }
 
-// Fraud Detection Interfaces
-interface FraudDetectionResult {
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
-  score: number;
-  flags: string[];
-  recommendations: string[];
-  category: string;
-}
-
-interface AnalysisHistoryItem {
-  id: string;
-  message: string;
-  result: FraudDetectionResult;
-  timestamp: Date;
-}
 
 const SecurityToolsHub = () => {
   const { toast } = useToast();
@@ -87,11 +67,6 @@ const SecurityToolsHub = () => {
   const [isCheckingUrl, setIsCheckingUrl] = useState(false);
   const [urlResult, setUrlResult] = useState<UrlResult | null>(null);
 
-  // Fraud Message Detector State
-  const [message, setMessage] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [fraudResult, setFraudResult] = useState<FraudDetectionResult | null>(null);
-  const [analysisHistory, setAnalysisHistory] = useState<AnalysisHistoryItem[]>([]);
 
   // Password Checker Logic
   const commonPasswords = [
@@ -222,153 +197,6 @@ const SecurityToolsHub = () => {
     }
   };
 
-  // Fraud Message Detector Logic
-  const fraudPatterns = {
-    urgentWords: ['urgent', 'immediately', 'expire', 'suspended', 'limited time', 'act now', 'hurry'],
-    moneyKeywords: ['money', 'cash', 'reward', 'prize', 'winner', 'lottery', 'inheritance', 'refund', 'compensation'],
-    personalInfoRequests: ['otp', 'password', 'pin', 'account number', 'card number', 'cvv', 'personal details'],
-    phishingIndicators: ['click here', 'verify account', 'update information', 'confirm identity', 'suspicious activity'],
-    impersonation: ['bank', 'government', 'police', 'income tax', 'rbi', 'sbi', 'hdfc', 'icici'],
-    scamTypes: {
-      lottery: ['lottery', 'winner', 'congratulations', 'prize', 'draw'],
-      phishing: ['verify', 'confirm', 'update', 'suspended', 'blocked'],
-      investment: ['investment', 'profit', 'returns', 'scheme', 'guaranteed'],
-      romance: ['love', 'lonely', 'relationship', 'marriage', 'visa'],
-      job: ['job', 'work from home', 'earning', 'part time', 'income']
-    }
-  };
-
-  const analyzeMessage = (text: string): FraudDetectionResult => {
-    const lowerText = text.toLowerCase();
-    let score = 0;
-    const flags: string[] = [];
-    let category = 'unknown';
-
-    // Check for urgent language
-    const urgentMatches = fraudPatterns.urgentWords.filter(word => lowerText.includes(word));
-    if (urgentMatches.length > 0) {
-      score += urgentMatches.length * 15;
-      flags.push(`Urgent language detected: ${urgentMatches.join(', ')}`);
-    }
-
-    // Check for money-related keywords
-    const moneyMatches = fraudPatterns.moneyKeywords.filter(word => lowerText.includes(word));
-    if (moneyMatches.length > 0) {
-      score += moneyMatches.length * 20;
-      flags.push(`Money-related keywords: ${moneyMatches.join(', ')}`);
-    }
-
-    // Check for personal information requests
-    const personalInfoMatches = fraudPatterns.personalInfoRequests.filter(word => lowerText.includes(word));
-    if (personalInfoMatches.length > 0) {
-      score += personalInfoMatches.length * 25;
-      flags.push(`Personal information requests: ${personalInfoMatches.join(', ')}`);
-    }
-
-    // Check for phishing indicators
-    const phishingMatches = fraudPatterns.phishingIndicators.filter(phrase => lowerText.includes(phrase));
-    if (phishingMatches.length > 0) {
-      score += phishingMatches.length * 30;
-      flags.push(`Phishing indicators: ${phishingMatches.join(', ')}`);
-    }
-
-    // Check for impersonation
-    const impersonationMatches = fraudPatterns.impersonation.filter(word => lowerText.includes(word));
-    if (impersonationMatches.length > 0) {
-      score += impersonationMatches.length * 20;
-      flags.push(`Potential impersonation: ${impersonationMatches.join(', ')}`);
-    }
-
-    // Determine scam category
-    for (const [type, keywords] of Object.entries(fraudPatterns.scamTypes)) {
-      const matches = keywords.filter(keyword => lowerText.includes(keyword));
-      if (matches.length > 0) {
-        category = type;
-        break;
-      }
-    }
-
-    // Determine risk level
-    let riskLevel: 'low' | 'medium' | 'high' | 'critical';
-    if (score >= 80) riskLevel = 'critical';
-    else if (score >= 50) riskLevel = 'high';
-    else if (score >= 25) riskLevel = 'medium';
-    else riskLevel = 'low';
-
-    // Generate recommendations
-    const recommendations: string[] = [];
-    if (score > 25) {
-      recommendations.push("Do not respond to this message");
-      recommendations.push("Do not click any links or download attachments");
-      recommendations.push("Do not share personal or financial information");
-    }
-    if (score > 50) {
-      recommendations.push("Block the sender immediately");
-      recommendations.push("Report this message to cybercrime authorities");
-    }
-    if (score < 25) {
-      recommendations.push("Message appears relatively safe, but always verify sender identity");
-    }
-
-    return {
-      riskLevel,
-      score: Math.min(score, 100),
-      flags,
-      recommendations,
-      category
-    };
-  };
-
-  const handleAnalyzeMessage = () => {
-    if (!message.trim()) return;
-    
-    setIsAnalyzing(true);
-    
-    // Simulate analysis time
-    setTimeout(() => {
-      const result = analyzeMessage(message);
-      setFraudResult(result);
-      
-      // Add to history
-      const historyItem: AnalysisHistoryItem = {
-        id: crypto.randomUUID(),
-        message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
-        result,
-        timestamp: new Date()
-      };
-      setAnalysisHistory(prev => [historyItem, ...prev.slice(0, 4)]); // Keep last 5
-      
-      setIsAnalyzing(false);
-    }, 1500);
-  };
-
-  const clearAnalysis = () => {
-    setMessage("");
-    setFraudResult(null);
-  };
-
-  const exportAnalysis = () => {
-    if (!fraudResult) return;
-    
-    const report = {
-      message,
-      analysis: fraudResult,
-      timestamp: new Date().toISOString()
-    };
-    
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `fraud-analysis-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Analysis Exported",
-      description: "Analysis report downloaded successfully",
-    });
-  };
 
   // Helper Functions
   const getUrlStatusIcon = (status: string) => {
@@ -389,15 +217,6 @@ const SecurityToolsHub = () => {
     }
   };
 
-  const getRiskColor = (riskLevel: string) => {
-    switch (riskLevel) {
-      case 'low': return 'text-green-500 border-green-200 bg-green-50';
-      case 'medium': return 'text-yellow-500 border-yellow-200 bg-yellow-50';
-      case 'high': return 'text-orange-500 border-orange-200 bg-orange-50';
-      case 'critical': return 'text-red-500 border-red-200 bg-red-50';
-      default: return 'text-gray-500 border-gray-200 bg-gray-50';
-    }
-  };
 
   const passwordStrengthData = getPasswordStrengthText();
 
@@ -424,13 +243,13 @@ const SecurityToolsHub = () => {
             <span className="gradient-primary bg-clip-text text-transparent">Security Tools Hub</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Your comprehensive cybersecurity toolkit - Password analysis, URL scanning, and fraud detection in one place
+            Essential security tools for password protection and URL verification
           </p>
         </div>
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="password" className="flex items-center gap-2">
               <KeyRound className="h-4 w-4" />
               Password Security
@@ -438,10 +257,6 @@ const SecurityToolsHub = () => {
             <TabsTrigger value="url" className="flex items-center gap-2">
               <Globe className="h-4 w-4" />
               URL Scanner
-            </TabsTrigger>
-            <TabsTrigger value="message" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Fraud Detector
             </TabsTrigger>
           </TabsList>
 
@@ -725,183 +540,6 @@ const SecurityToolsHub = () => {
             </Card>
           </TabsContent>
 
-          {/* Fraud Message Detector Tab */}
-          <TabsContent value="message" className="space-y-6">
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Message Analyzer */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card className="border-border/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5 text-primary" />
-                      Fraud Message Analyzer
-                    </CardTitle>
-                    <CardDescription>
-                      Paste a suspicious message to analyze for fraud indicators and scam patterns
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message Content</Label>
-                      <Textarea
-                        id="message"
-                        placeholder="Paste the suspicious message, email, or SMS here..."
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        className="min-h-[120px] transition-glow focus:glow-primary"
-                      />
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleAnalyzeMessage}
-                        disabled={isAnalyzing || !message.trim()}
-                        className="glow-primary transition-glow"
-                      >
-                        {isAnalyzing ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                          <Scan className="mr-2 h-4 w-4" />
-                        )}
-                        {isAnalyzing ? "Analyzing..." : "Analyze Message"}
-                      </Button>
-                      
-                      {message && (
-                        <Button variant="outline" onClick={clearAnalysis}>
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Clear
-                        </Button>
-                      )}
-                    </div>
-
-                    {fraudResult && (
-                      <div className="space-y-4">
-                        <Separator />
-                        
-                        {/* Risk Assessment */}
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold">Analysis Results</h3>
-                            <div className="flex gap-2">
-                              <Badge className={`${getRiskColor(fraudResult.riskLevel)} border`}>
-                                {fraudResult.riskLevel.toUpperCase()} RISK
-                              </Badge>
-                              <Button size="sm" variant="outline" onClick={exportAnalysis}>
-                                <Download className="h-3 w-3 mr-1" />
-                                Export
-                              </Button>
-                            </div>
-                          </div>
-
-                          {/* Risk Score */}
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <Label>Fraud Risk Score</Label>
-                              <span className="text-sm font-medium">{fraudResult.score}/100</span>
-                            </div>
-                            <Progress 
-                              value={fraudResult.score} 
-                              className="h-3"
-                            />
-                          </div>
-
-                          {/* Category */}
-                          {fraudResult.category !== 'unknown' && (
-                            <div className="p-3 rounded-lg bg-muted/30">
-                              <div className="flex items-center gap-2">
-                                <Badge variant="secondary">
-                                  Scam Category: {fraudResult.category.charAt(0).toUpperCase() + fraudResult.category.slice(1)}
-                                </Badge>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Fraud Indicators */}
-                          {fraudResult.flags.length > 0 && (
-                            <div className="space-y-3">
-                              <Label>Detected Fraud Indicators</Label>
-                              <div className="space-y-2">
-                                {fraudResult.flags.map((flag, index) => (
-                                  <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
-                                    <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5" />
-                                    <span className="text-sm text-red-700">{flag}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Recommendations */}
-                          <div className="space-y-3">
-                            <Label>Security Recommendations</Label>
-                            <div className="space-y-2">
-                              {fraudResult.recommendations.map((rec, index) => (
-                                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                                  <Shield className="h-4 w-4 text-blue-500 mt-0.5" />
-                                  <span className="text-sm text-blue-700">{rec}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Analysis History Sidebar */}
-              <Card className="border-border/40">
-                <CardHeader>
-                  <CardTitle className="text-lg">Recent Analysis</CardTitle>
-                  <CardDescription>
-                    Your last analyzed messages
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {analysisHistory.length === 0 ? (
-                    <div className="text-center py-8">
-                      <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        No analysis history yet
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {analysisHistory.map((item) => (
-                        <div
-                          key={item.id}
-                          className="p-3 rounded-lg border cursor-pointer hover:bg-muted/30 transition-colors"
-                          onClick={() => {
-                            setMessage(item.message);
-                            setFraudResult(item.result);
-                          }}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <Badge 
-                              variant="secondary" 
-                              className={`text-xs ${getRiskColor(item.result.riskLevel)}`}
-                            >
-                              {item.result.riskLevel}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {item.timestamp.toLocaleDateString()}
-                            </span>
-                          </div>
-                          <p className="text-sm text-muted-foreground truncate">
-                            {item.message}
-                          </p>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Score: {item.result.score}/100
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
     </div>

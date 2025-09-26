@@ -33,10 +33,17 @@ const Landing = () => {
     },
     {
       icon: Lock,
-      title: "Advanced Password Security",
-      description: "Real-time password strength analysis with breach detection and security recommendations",
+      title: "Security Tools Hub",
+      description: "Essential security toolkit - password strength analysis and URL verification",
       status: "Available",
-      href: "/password-checker",
+      href: "/security-tools",
+    },
+    {
+      icon: Eye,
+      title: "AI Detection Hub",
+      description: "Advanced AI-powered fraud detection for messages, documents, and voice calls",
+      status: "Available",
+      href: "/ai-detection",
     },
     {
       icon: Bot,
@@ -44,13 +51,6 @@ const Landing = () => {
       description: "24/7 intelligent cybersecurity guidance with natural language processing",
       status: "Available",
       href: "/chat",
-    },
-    {
-      icon: Eye,
-      title: "OCR Fraud Detection",
-      description: "Advanced document scanning with AI-powered fraud pattern recognition",
-      status: "Available",
-      href: "/ocr-fraud",
     },
     {
       icon: BookOpen,
@@ -456,7 +456,7 @@ const Landing = () => {
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
                 <li><Link to="/fir-generator" className="text-slate-300 hover:text-primary transition-colors">FIR Generator</Link></li>
-                <li><Link to="/password-checker" className="text-slate-300 hover:text-primary transition-colors">Password Checker</Link></li>
+                <li><Link to="/security-tools" className="text-slate-300 hover:text-primary transition-colors">Security Tools</Link></li>
                 <li><Link to="/chat" className="text-slate-300 hover:text-primary transition-colors">AI Assistant</Link></li>
                 <li><Link to="/scam-library" className="text-slate-300 hover:text-primary transition-colors">Scam Library</Link></li>
               </ul>
