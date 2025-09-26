@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Layout from "./components/Layout/Layout";
 import Landing from "./pages/Landing";
 import FirGenerator from "./pages/FirGenerator";
@@ -19,6 +20,7 @@ import Chat from "./pages/Chat";
 import ReportScam from "./pages/ReportScam";
 import FraudNews from "./pages/FraudNews";
 import ScamMap from '@/pages/ScamMapAPI';
+import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
@@ -30,10 +32,11 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Landing />} />
@@ -51,13 +54,16 @@ const App = () => {
               <Route path="fraud-news" element={<FraudNews />} />
               <Route path="help" element={<Help />} />
             </Route>
+            {/* Auth callback route (outside Layout) */}
+            <Route path="/auth/callback" element={<AuthCallback />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           <ChatWidget onToggleDebugPanel={() => setShowDebugPanel(!showDebugPanel)} />
           {showDebugPanel && <DebugPanel />}
-        </BrowserRouter>
-      </TooltipProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

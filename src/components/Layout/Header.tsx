@@ -29,6 +29,7 @@ import {
   Newspaper
 } from "lucide-react";
 import UrlChecker from "@/components/UrlChecker";
+import { UserMenu } from "@/components/auth/UserMenu";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -188,6 +189,9 @@ const Header = () => {
             <div className="flex items-center">
               <UrlChecker showInput={false} size="sm" />
             </div>
+
+            {/* User Menu */}
+            <UserMenu />
           </div>
 
           {/* Mobile Navigation */}
