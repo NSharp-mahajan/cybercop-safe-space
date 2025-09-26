@@ -33,6 +33,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { audioProcessingService } from "@/services/audioProcessingService";
+import { whisperService } from "@/services/whisperService";
 
 // Fraud Detection Interfaces
 interface FraudDetectionResult {
@@ -60,11 +62,26 @@ interface OCRResult {
 
 // Voice Analysis Interfaces
 interface VoiceAnalysisResult {
-  transcription: string;
+  isScam: boolean;
   confidence: number;
-  scamIndicators: string[];
-  riskLevel: 'low' | 'medium' | 'high' | 'critical';
-  emotions: string[];
+  transcript: string;
+  redFlags: string[];
+  scamType?: string;
+  recommendations: string[];
+  audioFeatures?: {
+    duration: number;
+    hasBackgroundNoise: boolean;
+    silenceRatio: number;
+    averageAmplitude: number;
+  };
+  detailedScores: {
+    urgencyScore: number;
+    financialScore: number;
+    threatScore: number;
+    impersonationScore: number;
+    personalInfoScore: number;
+    technicalScore: number;
+  };
 }
 
 const AIDetectionHub = () => {
@@ -190,13 +207,54 @@ const AIDetectionHub = () => {
     };
   };
 
-  const handleAnalyzeMessage = () => {
+  const handleAnalyzeMessage = async () => {
     if (!message.trim()) return;
     
     setIsAnalyzing(true);
     
-    // Simulate analysis time
-    setTimeout(() => {
+    try {
+      // Try to use Gemini API first
+      const { data, error } = await supabase.functions.invoke('fraud-message-detection', {
+        body: {
+          message: message,
+          language: 'en'
+        },
+      });
+
+      if (error) throw error;
+
+      if (data && data.success && data.analysis) {
+        // Use Gemini API results
+        const geminiResult: FraudDetectionResult = {
+          riskLevel: data.analysis.riskLevel,
+          score: data.analysis.score,
+          flags: data.analysis.flags,
+          recommendations: data.analysis.recommendations,
+          category: data.analysis.category
+        };
+        
+        setFraudResult(geminiResult);
+        
+        // Add to history
+        const historyItem: AnalysisHistoryItem = {
+          id: crypto.randomUUID(),
+          message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
+          result: geminiResult,
+          timestamp: new Date()
+        };
+        setAnalysisHistory(prev => [historyItem, ...prev.slice(0, 4)]); // Keep last 5
+        
+        toast({
+          title: "AI Analysis Complete",
+          description: `Risk Level: ${geminiResult.riskLevel.toUpperCase()} (${data.analysis.confidence}% confidence)`,
+        });
+      } else {
+        throw new Error('Invalid response from API');
+      }
+    } catch (error) {
+      console.log('Gemini API failed, falling back to local analysis:', error);
+      
+      // Fallback to local pattern-based analysis
       const result = analyzeMessage(message);
       setFraudResult(result);
       
@@ -209,8 +267,13 @@ const AIDetectionHub = () => {
       };
       setAnalysisHistory(prev => [historyItem, ...prev.slice(0, 4)]); // Keep last 5
       
+      toast({
+        title: "Analysis Complete",
+        description: "Using local pattern analysis (Gemini API unavailable)",
+      });
+    } finally {
       setIsAnalyzing(false);
-    }, 1500);
+    }
   };
 
   // OCR Processing Logic
@@ -233,37 +296,99 @@ const AIDetectionHub = () => {
     if (!selectedFile) return;
 
     setIsProcessingOCR(true);
+    setOcrResult(null);
     
     try {
       const { data: user } = await supabase.auth.getUser();
       
-      const formData = new FormData();
-      formData.append('image', selectedFile);
-      formData.append('user_id', user.user?.id || 'anonymous');
+      // Convert file to base64
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+      });
+      reader.readAsDataURL(selectedFile);
+      const base64Image = await base64Promise;
 
       const { data, error } = await supabase.functions.invoke('ocr-fraud-detection', {
-        body: formData,
+        body: {
+          image: base64Image,
+          fileName: selectedFile.name,
+          fileSize: selectedFile.size,
+          fileType: selectedFile.type,
+          userId: user.user?.id || null
+        },
       });
 
       if (error) throw error;
 
+      // Check for success response
+      if (!data || !data.success) {
+        throw new Error(data?.error || 'OCR processing failed');
+      }
+
+      const analysis = data.analysis;
+      
+      // Map fraud risk score to risk level
+      let riskLevel: 'low' | 'medium' | 'high' | 'critical';
+      if (analysis.fraud_risk >= 8) riskLevel = 'critical';
+      else if (analysis.fraud_risk >= 6) riskLevel = 'high';
+      else if (analysis.fraud_risk >= 4) riskLevel = 'medium';
+      else riskLevel = 'low';
+
       setOcrResult({
-        text: data.extractedText,
-        confidence: data.confidence,
-        fraudIndicators: data.fraudIndicators || [],
-        riskLevel: data.riskLevel || 'low'
+        text: analysis.extracted_text || '',
+        confidence: (analysis.confidence || 5) * 10, // Convert 1-10 to percentage
+        fraudIndicators: analysis.fraud_indicators || [],
+        riskLevel
       });
 
       toast({
-        title: "OCR Analysis Complete",
-        description: `Text extracted with ${data.confidence}% confidence`,
+        title: "✅ Document Analysis Complete",
+        description: `${analysis.document_type} analyzed with ${analysis.confidence}/10 confidence`,
       });
+
+      // Show additional warning if high fraud risk
+      if (analysis.fraud_risk >= 7) {
+        toast({
+          title: "⚠️ High Fraud Risk Detected!",
+          description: "This document shows signs of potential fraud. Please verify carefully.",
+          variant: "destructive",
+        });
+      }
 
     } catch (error: any) {
       console.error('OCR Error:', error);
+      
+      let errorMessage = "Failed to process the document. ";
+      let debugInfo = "";
+      
+      // Enhanced error detection
+      if (error.message?.includes('Gemini') || error.message?.includes('API key')) {
+        errorMessage += "The Gemini AI service is not configured or temporarily unavailable.";
+        debugInfo = "\n\n🔧 Setup Required:\n1. Get API key from https://makersuite.google.com/app/apikey\n2. Add GEMINI_API_KEY to Supabase Edge Functions\n3. Redeploy the ocr-fraud-detection function";
+      } else if (error.message?.includes('size') || error.message?.includes('large')) {
+        errorMessage += "The image file is too large. Please try a smaller image (< 4MB).";
+      } else if (error.message?.includes('non-2xx status code')) {
+        errorMessage += "The analysis service returned an error.";
+        debugInfo = "\n\n🔍 Debug Info:\n- Check Supabase function logs\n- Verify API keys are configured\n- Try a smaller image file";
+      } else if (error.details?.message) {
+        errorMessage += error.details.message;
+      } else {
+        errorMessage += error.message || "Please try again.";
+      }
+      
+      // Log detailed error for debugging
+      console.error('Detailed OCR Error:', {
+        message: error.message,
+        details: error.details,
+        status: error.status,
+        stack: error.stack
+      });
+      
       toast({
-        title: "OCR Failed",
-        description: "Failed to process the image. Please try again.",
+        title: "Analysis Failed",
+        description: errorMessage + debugInfo,
         variant: "destructive",
       });
     } finally {
@@ -340,30 +465,54 @@ const AIDetectionHub = () => {
     if (!audioFile) return;
 
     setIsProcessingVoice(true);
+    setVoiceResult(null);
     
     try {
-      // Simulate voice analysis with realistic results
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // First check if Whisper server is available
+      const whisperAvailable = await whisperService.isServerAvailable();
       
-      const mockResult: VoiceAnalysisResult = {
-        transcription: "Hello, this is a test transcription of the voice recording. The system detected various speech patterns and emotional indicators.",
-        confidence: 87,
-        scamIndicators: ["Urgent tone detected", "Financial keywords present", "Pressure tactics identified"],
-        riskLevel: Math.random() > 0.5 ? 'medium' : 'high',
-        emotions: ["Urgency", "Persuasion", "Authority"]
-      };
-
-      setVoiceResult(mockResult);
-
-      toast({
-        title: "Voice Analysis Complete",
-        description: `Analysis completed with ${mockResult.confidence}% confidence`,
+      const result = await audioProcessingService.processAudioFile(audioFile, {
+        onProgress: (progress, status) => {
+          console.log(`Progress: ${progress}% - ${status}`);
+        },
+        enableAudioAnalysis: true,
+        preferWhisper: true,
+        useWhisper: whisperAvailable // Force Whisper if available
       });
 
-    } catch (error) {
+      setVoiceResult(result);
+
+      // Show appropriate toast based on results
+      if (result.isScam) {
+        toast({
+          title: "⚠️ Scam Detected!",
+          description: `${result.scamType || 'Potential scam'} detected with ${result.confidence}% confidence`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "✅ Analysis Complete",
+          description: `Call appears safe (${result.confidence}% confidence)`,
+        });
+      }
+
+    } catch (error: any) {
+      console.error('Voice analysis error:', error);
+      
+      // Provide helpful error messages
+      let errorMessage = "Failed to analyze the audio. ";
+      
+      if (error.message.includes('Whisper server')) {
+        errorMessage += "\n\nTo use Whisper transcription:\n1. Install local Whisper server\n2. Run: python whisper_server.py\n\nOr try uploading a smaller audio file.";
+      } else if (error.message.includes('Web Speech API')) {
+        errorMessage += "Your browser doesn't support speech recognition. Please try Chrome or Edge.";
+      } else {
+        errorMessage += error.message || "Please try again.";
+      }
+      
       toast({
         title: "Analysis Failed",
-        description: "Failed to analyze the audio. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -851,8 +1000,12 @@ const AIDetectionHub = () => {
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">Voice Analysis Results</h3>
                         <div className="flex gap-2">
-                          <Badge className={`${getRiskColor(voiceResult.riskLevel)} border`}>
-                            {voiceResult.riskLevel.toUpperCase()} RISK
+                          <Badge className={`${
+                            voiceResult.isScam 
+                              ? 'bg-red-500 hover:bg-red-600 text-white' 
+                              : 'bg-green-500 hover:bg-green-600 text-white'
+                          }`}>
+                            {voiceResult.isScam ? 'SCAM DETECTED' : 'APPEARS SAFE'}
                           </Badge>
                           <Button size="sm" variant="outline" onClick={() => exportAnalysis('voice-analysis', voiceResult)}>
                             <Download className="h-3 w-3 mr-1" />
@@ -861,36 +1014,96 @@ const AIDetectionHub = () => {
                         </div>
                       </div>
 
+                      {/* Scam Type and Confidence */}
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Analysis Confidence</Label>
+                          <div className="flex items-center gap-2">
+                            <Progress value={voiceResult.confidence} className="flex-1" />
+                            <span className="text-sm font-medium w-12">{voiceResult.confidence}%</span>
+                          </div>
+                        </div>
+                        {voiceResult.scamType && (
+                          <div className="space-y-2">
+                            <Label>Scam Type Detected</Label>
+                            <Badge variant="destructive" className="w-fit">
+                              {voiceResult.scamType}
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Transcription */}
                       <div className="space-y-2">
-                        <Label>Transcription (Confidence: {voiceResult.confidence}%)</Label>
+                        <Label>Transcription</Label>
                         <Textarea
-                          value={voiceResult.transcription}
+                          value={voiceResult.transcript}
                           readOnly
                           className="min-h-[100px] bg-muted/50"
                         />
                       </div>
 
-                      {voiceResult.emotions.length > 0 && (
+                      {/* Audio Features */}
+                      {voiceResult.audioFeatures && (
                         <div className="space-y-2">
-                          <Label>Detected Emotions</Label>
-                          <div className="flex flex-wrap gap-2">
-                            {voiceResult.emotions.map((emotion, index) => (
-                              <Badge key={index} variant="secondary">
-                                {emotion}
-                              </Badge>
+                          <Label>Audio Analysis</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="p-2 rounded-lg bg-muted/30">
+                              <div className="text-xs text-muted-foreground">Duration</div>
+                              <div className="font-medium">{voiceResult.audioFeatures.duration.toFixed(1)}s</div>
+                            </div>
+                            <div className="p-2 rounded-lg bg-muted/30">
+                              <div className="text-xs text-muted-foreground">Background Noise</div>
+                              <div className="font-medium">{voiceResult.audioFeatures.hasBackgroundNoise ? 'Yes' : 'No'}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Detailed Scores */}
+                      {voiceResult.detailedScores && (
+                        <div className="space-y-2">
+                          <Label>Risk Analysis Breakdown</Label>
+                          <div className="space-y-1">
+                            {Object.entries(voiceResult.detailedScores).map(([category, score]) => {
+                              const displayName = category.replace('Score', '').replace(/([A-Z])/g, ' $1').trim();
+                              const capitalize = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+                              return (
+                                <div key={category} className="flex items-center gap-2">
+                                  <span className="text-sm w-32">{capitalize}:</span>
+                                  <Progress value={score} className="flex-1 h-2" />
+                                  <span className="text-xs w-8">{score}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Red Flags */}
+                      {voiceResult.redFlags && voiceResult.redFlags.length > 0 && (
+                        <div className="space-y-3">
+                          <Label>Red Flags Detected</Label>
+                          <div className="space-y-2">
+                            {voiceResult.redFlags.map((flag, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
+                                <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5" />
+                                <span className="text-sm text-red-700">{flag}</span>
+                              </div>
                             ))}
                           </div>
                         </div>
                       )}
 
-                      {voiceResult.scamIndicators.length > 0 && (
+                      {/* Recommendations */}
+                      {voiceResult.recommendations && voiceResult.recommendations.length > 0 && (
                         <div className="space-y-3">
-                          <Label>Scam Indicators Detected</Label>
+                          <Label>Security Recommendations</Label>
                           <div className="space-y-2">
-                            {voiceResult.scamIndicators.map((indicator, index) => (
-                              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
-                                <AlertTriangle className="h-4 w-4 text-red-500 mt-0.5" />
-                                <span className="text-sm text-red-700">{indicator}</span>
+                            {voiceResult.recommendations.map((rec, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                                <Shield className="h-4 w-4 text-blue-500 mt-0.5" />
+                                <span className="text-sm text-blue-700">{rec}</span>
                               </div>
                             ))}
                           </div>

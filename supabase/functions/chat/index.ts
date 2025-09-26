@@ -79,14 +79,14 @@ serve(async (req) => {
 
     // Get AI response from Gemini
     let aiResponse = '';
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY_CHAT') || Deno.env.get('GEMINI_API_KEY');
     
     if (geminiApiKey) {
       try {
         const systemPrompt = 'You are CyberCop AI, a helpful assistant specializing in cybersecurity, cyber safety, scam reporting, and FIR filing. Provide accurate, helpful information about filing FIRs, reporting scams, identifying fraudulent activities, password security, and general cyber safety. Keep responses concise but informative.';
         const fullPrompt = `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`;
         
-        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${geminiApiKey}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

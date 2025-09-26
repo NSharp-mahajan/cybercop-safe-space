@@ -47,3 +47,10 @@ whisper_models/
 *.pt
 *.pth
 *.bin
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+supabase/.env

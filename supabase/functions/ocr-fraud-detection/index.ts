@@ -29,7 +29,7 @@ serve(async (req) => {
     console.log('Processing OCR fraud detection request for file:', fileName);
 
     // Call Gemini Vision API to analyze the document
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY_OCR') || Deno.env.get('GEMINI_API_KEY');
     
     if (!geminiApiKey) {
       throw new Error('Gemini API key not configured');
@@ -45,7 +45,7 @@ serve(async (req) => {
       mimeType = header.split(';')[0].split(':')[1] || 'image/jpeg';
     }
     
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

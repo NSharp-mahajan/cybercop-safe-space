@@ -27,7 +27,6 @@ import {
   KeyRound,
   Phone
 } from "lucide-react";
-import UrlChecker from "@/components/UrlChecker";
 import { UserMenu } from "@/components/auth/UserMenu";
 
 const Header = () => {
@@ -182,11 +181,6 @@ const Header = () => {
               </NavigationMenuList>
             </NavigationMenu>
 
-            {/* URL Checker */}
-            <div className="flex items-center">
-              <UrlChecker showInput={false} size="sm" />
-            </div>
-
             {/* User Menu */}
             <UserMenu />
           </div>
@@ -201,10 +195,6 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] border-l border-border/40">
                 <div className="flex flex-col space-y-1 mt-8">
-                  <div className="mb-4">
-                    <UrlChecker showInput={true} size="sm" />
-                  </div>
-                  
                   {/* Home Link for Mobile */}
                   <div className="mb-4">
                     <Button
