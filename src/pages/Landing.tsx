@@ -18,6 +18,7 @@ import {
   Award,
   Globe,
   ArrowRight,
+  AlertTriangle,
 } from "lucide-react";
 import QuickScamReport from "@/components/QuickScamReport";
 import Robot from "@/components/Robot";
@@ -74,6 +75,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen">
+
       {/* Hero Section */}
       <section className="relative overflow-hidden py-24 px-4">
         <div className="absolute inset-0 gradient-dark opacity-80" />
@@ -175,11 +177,11 @@ const Landing = () => {
                 </CardHeader>
                 <CardContent>
                   <Button asChild className="w-full transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                    <Link to={feature.href}>
+                      <Link to={feature.href}>
                       <ArrowRight className="mr-2 h-4 w-4" />
-                      Try Now
-                    </Link>
-                  </Button>
+                        Try Now
+                      </Link>
+                    </Button>
                 </CardContent>
               </Card>
             ))}
@@ -192,8 +194,246 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Live News Feed Section */}
+      <section className="py-16 px-4 bg-gradient-to-r from-background via-muted/10 to-background">
+        <div className="container mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+              <h2 className="text-3xl font-bold text-foreground">Live News Feed</h2>
+            </div>
+            <div className="h-px bg-primary/30 flex-1"></div>
+            <Badge variant="secondary" className="px-3 py-1">
+              Latest Updates
+            </Badge>
+          </div>
+          
+          <div className="relative overflow-hidden">
+            <div className="animate-scroll-news-cards">
+              <div className="flex gap-4">
+                {/* News Card 1 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1560472355-536de3962603?w=300&h=200&fit=crop&crop=smart"
+                        alt="AI Security"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-red-500">BREAKING</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        AI Fraud Detection Algorithm Achieves 95% Accuracy
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        New machine learning model successfully identifies fraudulent transactions with unprecedented accuracy.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">2 min ago</span>
+                        <Badge variant="outline" className="text-xs">Security</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
 
+                {/* News Card 2 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&h=200&fit=crop&crop=smart"
+                        alt="Mobile Security"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-orange-500">ALERT</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        UPI Phishing Attacks Surge by 30% This Week
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        Cybercriminals targeting mobile payment users with sophisticated phishing techniques and fake payment apps.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">15 min ago</span>
+                        <Badge variant="outline" className="text-xs">Phishing</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
 
+                {/* News Card 3 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=200&fit=crop&crop=smart"
+                        alt="Success Story"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-green-500">SUCCESS</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        ₹50 Lakh Cybercrime Case Solved Using CyberCop
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        Major financial fraud case cracked with evidence tools from our platform, helping authorities recover stolen funds.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">1 hour ago</span>
+                        <Badge variant="outline" className="text-xs">Success</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                {/* News Card 4 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=200&fit=crop&crop=smart"
+                        alt="Technology Update"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-purple-500">UPDATE</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        Platform Now Supports 12 Indian Languages
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        FIR generation now available in regional languages for better accessibility across India's diverse population.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">3 hours ago</span>
+                        <Badge variant="outline" className="text-xs">Feature</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                {/* News Card 5 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=200&fit=crop&crop=smart"
+                        alt="Community Safety"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-cyan-500">COMMUNITY</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        2,500+ Fraudulent URLs Blocked This Week
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        Community-driven reporting helps block malicious websites across India, protecting millions of users.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">6 hours ago</span>
+                        <Badge variant="outline" className="text-xs">Community</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                {/* News Card 6 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=300&h=200&fit=crop&crop=smart"
+                        alt="Cryptocurrency Warning"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-red-500">WARNING</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        Fake Crypto Investment Scams on Social Media
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        Scammers using celebrity deepfakes to promote fraudulent cryptocurrency schemes targeting young investors.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">12 hours ago</span>
+                        <Badge variant="outline" className="text-xs">Crypto</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                {/* News Card 7 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=smart"
+                        alt="Government Security"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-indigo-500">SECURITY</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        Government Portal Integration Completed
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        Seamless integration with National Cyber Crime Portal for faster reporting and better coordination.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">1 day ago</span>
+                        <Badge variant="outline" className="text-xs">Government</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+
+                {/* News Card 8 */}
+                <Link to="/fraud-news" className="block">
+                  <Card className="min-w-[220px] max-w-[220px] h-[280px] group hover:scale-105 transition-all duration-300 border-border/40 bg-gradient-to-br from-background to-muted/30 cursor-pointer">
+                    <div className="relative h-28 overflow-hidden rounded-t-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300&h=200&fit=crop&crop=smart"
+                        alt="Achievement Milestone"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <Badge className="absolute top-2 left-2 text-xs bg-green-500">MILESTONE</Badge>
+                    </div>
+                    <CardContent className="p-3 h-48 flex flex-col">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        1 Million+ Safe Transactions Verified
+                      </h3>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-2 flex-1">
+                        CyberCop reaches major milestone in protecting digital transactions across India's banking ecosystem.
+                      </p>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-xs text-accent">2 days ago</span>
+                        <Badge variant="outline" className="text-xs">Milestone</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            </div>
+            
+            <div className="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-white py-16 px-4">
