@@ -41,9 +41,16 @@ serve(async (req) => {
     
     if (image.startsWith('data:')) {
       const [header, data] = image.split(',');
-      base64Data = data;
+      base64Data = data || image; // Use data part or fallback to full string
       mimeType = header.split(';')[0].split(':')[1] || 'image/jpeg';
+    } else if (image.includes('base64,')) {
+      // Handle case where split might not work as expected
+      base64Data = image.substring(image.indexOf('base64,') + 7);
     }
+    
+    // Log for debugging
+    console.log('Image data extraction - mimeType:', mimeType, 'base64 length:', base64Data.length);
+    console.log('Base64 preview:', base64Data.substring(0, 50) + '...');
     
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
@@ -54,25 +61,17 @@ serve(async (req) => {
         contents: [{
           parts: [
             {
-              text: `You are an expert fraud detection analyst specializing in document analysis. Analyze the provided document image.
+              text: `Analyze the document image and extract all text. Look for fraud indicators.
 
-IMPORTANT: You must respond with ONLY valid JSON, no additional text or formatting.
+Provide your analysis as a JSON object with these fields:
+- extracted_text: all visible text from the document
+- document_type: what kind of document this is
+- fraud_risk: risk score from 1 to 10
+- fraud_indicators: array of suspicious elements found
+- recommendations: array of suggested actions
+- confidence: your confidence level from 1 to 10
 
-Analyze for:
-1. Text Extraction: Extract all visible text content
-2. Fraud Indicators: Look for signs of tampering, inconsistencies, fake elements
-3. Document Type: Identify the document type
-4. Risk Assessment: Rate fraud risk 1-10
-
-Return JSON in this exact format:
-{
-  "extracted_text": "all text from the document",
-  "document_type": "type of document",
-  "fraud_risk": 5,
-  "fraud_indicators": ["indicator 1", "indicator 2"],
-  "recommendations": ["recommendation 1", "recommendation 2"],
-  "confidence": 8
-}`
+Respond only with the JSON object.`
             },
             {
               inline_data: {
@@ -86,7 +85,8 @@ Return JSON in this exact format:
           temperature: 0.1,
           topK: 32,
           topP: 1,
-          maxOutputTokens: 1500
+          maxOutputTokens: 2000,
+          candidateCount: 1
         },
         safetySettings: [
           {
@@ -116,15 +116,18 @@ Return JSON in this exact format:
     }
 
     const data = await response.json();
+    console.log('Gemini API response received');
     let analysisResult;
 
     try {
       // Get content from Gemini response
       if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        console.error('Invalid response structure:', JSON.stringify(data));
         throw new Error('No valid response from Gemini');
       }
       
       const content = data.candidates[0].content.parts[0].text;
+      console.log('Gemini text response length:', content.length);
       
       // Try to parse as JSON first
       try {
