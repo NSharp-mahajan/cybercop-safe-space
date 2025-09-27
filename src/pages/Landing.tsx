@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import QuickScamReport from "@/components/QuickScamReport";
 import Robot from "@/components/Robot";
+import ChromeExtension from "@/components/ChromeExtensionSimple";
 
 const Landing = () => {
   const features = [
@@ -166,11 +167,11 @@ const Landing = () => {
                 </CardHeader>
                 <CardContent>
                   <Button asChild className="w-full transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                      <Link to={feature.href}>
+                    <Link to={feature.href}>
                       <ArrowRight className="mr-2 h-4 w-4" />
-                        Try Now
-                      </Link>
-                    </Button>
+                      Try Now
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -182,6 +183,9 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Chrome Extension Section */}
+      <ChromeExtension />
 
       {/* Live News Feed Section */}
       <section className="py-16 px-4 bg-gradient-to-r from-background via-muted/10 to-background">
@@ -414,7 +418,7 @@ const Landing = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </Link>
+            </Link>
               </div>
             </div>
             

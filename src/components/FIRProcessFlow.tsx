@@ -116,7 +116,7 @@ const FIRProcessFlow: React.FC<FIRProcessFlowProps> = ({ currentStep = 1 }) => {
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Follow these simple steps to generate and submit your FIR with ease
           </p>
-        </div>
+      </div>
 
         {/* Process Steps - Zigzag Layout */}
         <div className="relative">
@@ -126,8 +126,8 @@ const FIRProcessFlow: React.FC<FIRProcessFlowProps> = ({ currentStep = 1 }) => {
               backgroundImage: 'linear-gradient(cyan 1px, transparent 1px), linear-gradient(90deg, cyan 1px, transparent 1px)',
               backgroundSize: '40px 40px'
             }}></div>
-          </div>
-
+              </div>
+              
           {/* Steps Container - 2x2 Grid Layout */}
           <div className="relative">
             {/* Grid Container */}
@@ -168,8 +168,8 @@ const FIRProcessFlow: React.FC<FIRProcessFlowProps> = ({ currentStep = 1 }) => {
                         </div>
                       </CardContent>
                     </Card>
-      </div>
-
+              </div>
+              
                   {/* Back Side - Image Content */}
                   <div className={`absolute inset-0 w-full h-full backface-hidden ${flippedCards.has(1) ? 'block' : 'hidden'}`} style={{ transform: 'rotateY(180deg)' }}>
                     <Card className={`${getStepStyles(steps[0])} bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90 border-2 border-cyan-500/20 shadow-2xl h-full`}>
@@ -253,8 +253,8 @@ const FIRProcessFlow: React.FC<FIRProcessFlowProps> = ({ currentStep = 1 }) => {
                         </div>
                       </CardContent>
                     </Card>
-                  </div>
-
+              </div>
+              
                   {/* Back Side - Image Content */}
                   <div className={`absolute inset-0 w-full h-full backface-hidden ${flippedCards.has(2) ? 'block' : 'hidden'}`} style={{ transform: 'rotateY(180deg)' }}>
                     <Card className={`${getStepStyles(steps[1])} bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90 border-2 border-cyan-500/20 shadow-2xl h-full`}>
@@ -299,9 +299,9 @@ const FIRProcessFlow: React.FC<FIRProcessFlowProps> = ({ currentStep = 1 }) => {
                       </CardContent>
                     </Card>
                   </div>
-                </div>
               </div>
-              
+            </div>
+
               {/* Step 3 - Preview FIR */}
               <div className="relative">
                 <div 
@@ -479,7 +479,7 @@ const FIRProcessFlow: React.FC<FIRProcessFlowProps> = ({ currentStep = 1 }) => {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
 
             {/* Curved Arrows - Removed for cleaner design */}
             {/* <div className="absolute inset-0 pointer-events-none">
