@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import AuthTest from "./pages/AuthTest";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
+import { AuthDebug } from "./components/AuthDebug";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => {
           </Routes>
           <ChatWidget onToggleDebugPanel={() => setShowDebugPanel(!showDebugPanel)} />
           {showDebugPanel && <DebugPanel />}
+          <AuthDebug />
           </BrowserRouter>
           </TooltipProvider>
         </SubscriptionProvider>
