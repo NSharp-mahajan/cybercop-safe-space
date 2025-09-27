@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from '@/lib/hooks';
 import { useNavigate } from "react-router-dom";
 import { Badge, useAuth, useSubscription } from '@/lib/hooks';
+import { AuthModal } from './AuthModal';
 
 export const UserMenu = () => {
   const { user, loading, signOut } = useAuth();

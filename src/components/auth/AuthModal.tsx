@@ -3,7 +3,9 @@ import { Eye, EyeOff, Mail, Lock, User, Shield } from "lucide-react";
 import { ResetPasswordModal } from "./ResetPasswordModal";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Button, Input, Alert, AlertDescription, useAuth, useToast } from '@/lib/hooks';
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthModalProps {
   isOpen: boolean;

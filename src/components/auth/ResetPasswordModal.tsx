@@ -3,6 +3,7 @@ import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Button, Input, Alert, AlertDescription, useAuth, useToast } from '@/lib/hooks';
+import { supabase } from "@/integrations/supabase/client";
 interface ResetPasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
