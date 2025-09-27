@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
 import { Crown, Shield, Chrome, MessageSquare, FileText, Zap, CheckCircle, Download, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/contexts/SubscriptionContext";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Alert, AlertDescription, useAuth, useSubscription } from '@/lib/hooks';
 import { ExtensionDownload } from "@/components/ExtensionDownload";
 import { Link } from "react-router-dom";
 

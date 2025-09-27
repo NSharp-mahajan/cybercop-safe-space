@@ -1,14 +1,8 @@
 import { useState } from "react";
 import { Crown, Check, Star, Shield, Zap, Sparkles, CreditCard, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { useSubscription } from "@/contexts/SubscriptionContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Alert, AlertDescription, useSubscription, useAuth, useToast } from '@/lib/hooks';
 import { ExtensionDownload } from "@/components/ExtensionDownload";
 
 const Subscription = () => {

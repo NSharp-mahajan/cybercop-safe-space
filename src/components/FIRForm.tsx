@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-
-// 🔑 ADD YOUR GEMINI API KEY HERE (if not using .env.local)
-const GEMINI_API_KEY = "AIzaSyAXNx2T9ck-BEGdcCdcNUVahE_emVh9amU"; 
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { Button, Input, Card, CardContent, CardHeader, CardTitle, Badge, useToast } from '@/lib/hooks';
+
+// 🔑 ADD YOUR GEMINI API KEY HERE (if not using .env.local)
+const GEMINI_API_KEY = "AIzaSyAXNx2T9ck-BEGdcCdcNUVahE_emVh9amU";
 import { firService } from "@/services/firService";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, CheckCircle, RefreshCw, ExternalLink, MapPin, FileText, ChevronRight, AlertTriangle } from "lucide-react";

@@ -1,11 +1,7 @@
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle, XCircle, AlertTriangle, LogOut, User } from "lucide-react";
+import { useAuth, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Alert, AlertDescription } from '@/lib/hooks';
 import { AuthModal } from "@/components/auth/AuthModal";
 
 export default function AuthTest() {

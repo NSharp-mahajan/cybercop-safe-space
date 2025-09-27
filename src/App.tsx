@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,14 +24,12 @@ import Subscription from "./pages/Subscription";
 import ProDashboard from "./pages/ProDashboard";
 import NotFound from "./pages/NotFound";
 import AuthTest from "./pages/AuthTest";
+import SubscriptionTest from "./pages/SubscriptionTest";
 import ChatWidget from "./components/ChatWidget";
-import DebugPanel from "./components/DebugPanel";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [showDebugPanel, setShowDebugPanel] = useState(false);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -58,6 +55,7 @@ const App = () => {
               <Route path="pro-dashboard" element={<ProDashboard />} />
               <Route path="help" element={<Help />} />
               <Route path="auth-test" element={<AuthTest />} />
+              <Route path="subscription-test" element={<SubscriptionTest />} />
             </Route>
             {/* Auth routes (outside Layout) */}
             <Route path="/auth/callback" element={<AuthCallback />} />
@@ -65,8 +63,7 @@ const App = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <ChatWidget onToggleDebugPanel={() => setShowDebugPanel(!showDebugPanel)} />
-          {showDebugPanel && <DebugPanel />}
+          <ChatWidget />
           </BrowserRouter>
           </TooltipProvider>
         </SubscriptionProvider>

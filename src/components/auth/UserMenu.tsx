@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { User, LogOut, Settings, Crown, FileText, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/contexts/SubscriptionContext";
-import { AuthModal } from "./AuthModal";
+import { Button } from '@/lib/hooks';
+import { useNavigate } from "react-router-dom";
+import { Badge, useAuth, useSubscription } from '@/lib/hooks';
 
 export const UserMenu = () => {
   const { user, loading, signOut } = useAuth();

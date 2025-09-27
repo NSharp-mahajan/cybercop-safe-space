@@ -159,7 +159,7 @@ class PaymentService {
           currency: options.currency || 'INR',
           name: 'CyberCop Safe Space',
           description: `${plan.name} - ${options.billingCycle} subscription`,
-          image: '/favicon.ico',
+          image: 'https://storage.googleapis.com/gpt-engineer-file-uploads/PV4PIq528rhqfb6i594ANQRv5jk2/uploads/1757931531206-cyber.png',
           prefill: {
             name: userName,
             email: userEmail,

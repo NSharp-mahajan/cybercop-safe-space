@@ -1,9 +1,7 @@
 import React from "react";
 import jsPDF from "jspdf";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Download, ArrowLeft } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Button, Card, CardContent, CardHeader, CardTitle, useToast } from '@/lib/hooks';
 
 interface FormData {
   name: string;

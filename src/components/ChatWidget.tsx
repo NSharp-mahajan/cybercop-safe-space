@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageCircle, X, Send, Loader2, Settings } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
+import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, useToast } from '@/lib/hooks';
 import { supabase } from '@/integrations/supabase/client';
 import { mockChatService } from '@/services/mockChatService';
 
@@ -20,11 +17,7 @@ interface Chat {
   messages: Message[];
 }
 
-interface ChatWidgetProps {
-  onToggleDebugPanel?: () => void;
-}
-
-const ChatWidget = ({ onToggleDebugPanel }: ChatWidgetProps) => {
+const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -181,26 +174,13 @@ const ChatWidget = ({ onToggleDebugPanel }: ChatWidgetProps) => {
   if (!isOpen) {
     return (
       <div className="chat-widget-container">
-        <div className="flex flex-col gap-3">
-          {onToggleDebugPanel && (
-            <Button
-              onClick={onToggleDebugPanel}
-              className="rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-shadow glow-primary"
-              size="icon"
-              variant="outline"
-              title="Toggle Debug Panel"
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
-          )}
-          <Button
-            onClick={() => setIsOpen(true)}
-            className="chat-widget-button rounded-full w-14 h-14 shadow-lg gradient-primary"
-            size="icon"
-          >
-            <MessageCircle className="h-6 w-6" />
-          </Button>
-        </div>
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="chat-widget-button rounded-full w-14 h-14 shadow-lg gradient-primary"
+          size="icon"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </Button>
       </div>
     );
   }

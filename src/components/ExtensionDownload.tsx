@@ -1,14 +1,8 @@
 import { useState, useEffect } from "react";
 import { Download, Chrome, Key, Shield, CheckCircle, Copy, ExternalLink, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/contexts/SubscriptionContext";
-import { extensionService } from "@/services/extensionService";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Alert, AlertDescription, useAuth, useSubscription, useToast } from '@/lib/hooks';
+import { extensionService } from '@/services/extensionService';
 
 export const ExtensionDownload = () => {
   const { user } = useAuth();
