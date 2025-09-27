@@ -76,6 +76,12 @@ interface UrlResult {
     };
     warnings: string[];
     recommendations: string[];
+    domainContext?: {
+      type: 'government' | 'educational' | 'healthcare' | 'financial' | 'trusted' | 'general';
+      trustLevel: 'high' | 'medium' | 'low';
+      explanation: string;
+    };
+    scoreExplanation?: string;
   };
 }
 
@@ -899,6 +905,20 @@ const SecurityToolsHub = () => {
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">Scan Results</h3>
                         <div className="flex items-center gap-3">
+                          {/* Domain Context Badge */}
+                          {urlResult.details?.domainContext && (
+                            <Badge 
+                              variant={urlResult.details.domainContext.trustLevel === 'high' ? 'default' : 'secondary'}
+                              className="text-xs"
+                            >
+                              {urlResult.details.domainContext.type === 'government' && '🏛️ Government'}
+                              {urlResult.details.domainContext.type === 'educational' && '🎓 Educational'}
+                              {urlResult.details.domainContext.type === 'healthcare' && '🏥 Healthcare'}
+                              {urlResult.details.domainContext.type === 'financial' && '🏦 Financial'}
+                              {urlResult.details.domainContext.type === 'trusted' && '✓ Trusted'}
+                              {urlResult.details.domainContext.type === 'general' && '🌐 General'}
+                            </Badge>
+                          )}
                           {urlResult.score !== undefined && (
                             <div className="text-right">
                               <div className="text-2xl font-bold">{urlResult.score}/100</div>
@@ -930,9 +950,11 @@ const SecurityToolsHub = () => {
                               {urlResult.status === 'malicious' && "URL flagged as dangerous"}
                             </h4>
                             <p className="text-sm text-muted-foreground">
-                              {urlResult.status === 'safe' && "This URL has been verified and appears to be legitimate. However, always exercise caution when sharing personal information."}
-                              {urlResult.status === 'suspicious' && "This URL exhibits patterns commonly associated with phishing or scam sites. Proceed with extreme caution."}
-                              {urlResult.status === 'malicious' && "This URL has been identified as malicious. Do not visit this site or download any content from it."}
+                              {urlResult.details?.scoreExplanation || (
+                                urlResult.status === 'safe' ? "This URL has been verified and appears to be legitimate. However, always exercise caution when sharing personal information." :
+                                urlResult.status === 'suspicious' ? "This URL exhibits patterns commonly associated with phishing or scam sites. Proceed with extreme caution." :
+                                "This URL has been identified as malicious. Do not visit this site or download any content from it."
+                              )}
                             </p>
                             {urlResult.cached && (
                               <Badge variant="secondary" className="mt-2 text-xs">
@@ -942,6 +964,16 @@ const SecurityToolsHub = () => {
                           </div>
                         </div>
                       </div>
+                      
+                      {/* Domain Context Information */}
+                      {urlResult.details?.domainContext && (
+                        <Alert className="bg-blue-50 border-blue-200">
+                          <Info className="h-4 w-4 text-blue-600" />
+                          <AlertDescription className="text-blue-800">
+                            <strong>Domain Information:</strong> {urlResult.details.domainContext.explanation}
+                          </AlertDescription>
+                        </Alert>
+                      )}
 
                       {/* Detailed Analysis */}
                       {urlResult.details && (

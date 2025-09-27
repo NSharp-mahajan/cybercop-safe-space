@@ -204,6 +204,12 @@ interface AnalysisResult {
     };
     warnings: string[];
     recommendations: string[];
+    domainContext?: {
+      type: 'government' | 'educational' | 'healthcare' | 'financial' | 'trusted' | 'general';
+      trustLevel: 'high' | 'medium' | 'low';
+      explanation: string;
+    };
+    scoreExplanation: string;
   };
 }
 
@@ -220,7 +226,8 @@ async function analyzeURL(url: string): Promise<AnalysisResult> {
         contentAnalysis: { passed: true, score: 10 }
       },
       warnings: [],
-      recommendations: []
+      recommendations: [],
+      scoreExplanation: ''
     }
   };
 
@@ -228,6 +235,10 @@ async function analyzeURL(url: string): Promise<AnalysisResult> {
     const urlObj = new URL(url);
     const domain = urlObj.hostname.toLowerCase();
     const fullUrl = url.toLowerCase();
+    
+    // Detect domain context first
+    const domainContext = detectDomainContext(domain);
+    result.details.domainContext = domainContext;
     
     // 1. Pattern Analysis (25 points)
     const patternResult = analyzePatterns(fullUrl, domain, urlObj);
@@ -256,16 +267,28 @@ async function analyzeURL(url: string): Promise<AnalysisResult> {
     }
     result.score = Math.max(0, Math.min(100, totalScore));
     
-    // Determine status based on score
-    if (result.score >= 80) {
-      result.status = 'safe';
-    } else if (result.score >= 50) {
-      result.status = 'suspicious';
-      result.details.warnings.push('This URL shows some suspicious characteristics. Proceed with caution.');
+    // Adjust status based on domain context
+    if (domainContext.trustLevel === 'high' && result.score >= 40) {
+      // Trusted domains get more lenient treatment
+      result.status = result.score >= 60 ? 'safe' : 'suspicious';
+      if (domainContext.type === 'government' || domainContext.type === 'educational') {
+        result.details.warnings.push(`Note: This is a ${domainContext.type} website with lower technical scores but high institutional trust.`);
+      }
     } else {
-      result.status = 'malicious';
-      result.details.warnings.push('This URL appears to be dangerous. Do not proceed.');
+      // Standard scoring for other domains
+      if (result.score >= 80) {
+        result.status = 'safe';
+      } else if (result.score >= 50) {
+        result.status = 'suspicious';
+        result.details.warnings.push('This URL shows some suspicious characteristics. Proceed with caution.');
+      } else {
+        result.status = 'malicious';
+        result.details.warnings.push('This URL appears to be dangerous. Do not proceed.');
+      }
     }
+    
+    // Generate score explanation
+    result.details.scoreExplanation = generateScoreExplanation(result.score, domainContext, result.details.checks);
     
     // Add recommendations based on findings
     if (!result.details.checks.sslCertificate.passed) {
@@ -408,6 +431,20 @@ function analyzePatterns(fullUrl: string, domain: string, urlObj: URL): { passed
 async function checkDomainReputation(domain: string): Promise<{ passed: boolean; score: number; reason?: string }> {
   let score = 25;
   let reasons: string[] = [];
+  
+  // Check domain context first
+  const domainContext = detectDomainContext(domain);
+  
+  // Special handling for government and educational domains
+  if (domainContext.type === 'government') {
+    // Government domains always get full reputation score
+    return { passed: true, score: 25, reason: 'Official government domain - inherently trusted' };
+  }
+  
+  if (domainContext.type === 'educational') {
+    // Educational domains get high reputation score
+    return { passed: true, score: 23, reason: 'Educational institution domain' };
+  }
   
   // Check if domain is in common whitelist
   const trustedDomains = [
@@ -773,6 +810,131 @@ async function checkDomainAge(domain: string): Promise<{ exists: boolean; isNew:
   } catch (error) {
     console.error('Domain age check failed:', error);
     return { exists: false, isNew: true, error: 'Domain verification failed' };
+  }
+}
+
+// Domain context detection
+function detectDomainContext(domain: string): {
+  type: 'government' | 'educational' | 'healthcare' | 'financial' | 'trusted' | 'general';
+  trustLevel: 'high' | 'medium' | 'low';
+  explanation: string;
+} {
+  const lowerDomain = domain.toLowerCase();
+  
+  // Government domains
+  if (lowerDomain.endsWith('.gov') || lowerDomain.endsWith('.gov.in') || 
+      lowerDomain.endsWith('.gov.uk') || lowerDomain.endsWith('.gov.au') ||
+      lowerDomain.endsWith('.gc.ca') || lowerDomain.endsWith('.govt.nz') ||
+      lowerDomain.endsWith('.gov.sg') || lowerDomain.includes('.government.') ||
+      lowerDomain.endsWith('.gob.mx') || lowerDomain.endsWith('.gov.br')) {
+    return {
+      type: 'government',
+      trustLevel: 'high',
+      explanation: 'This is an official government domain. Government websites are inherently trusted, though they may have lower technical security scores due to legacy systems.'
+    };
+  }
+  
+  // Educational domains
+  if (lowerDomain.endsWith('.edu') || lowerDomain.endsWith('.ac.uk') || 
+      lowerDomain.endsWith('.edu.au') || lowerDomain.endsWith('.ac.in') ||
+      lowerDomain.endsWith('.edu.sg') || lowerDomain.endsWith('.edu.cn')) {
+    return {
+      type: 'educational',
+      trustLevel: 'high',
+      explanation: 'This is an educational institution domain. Educational websites are generally trusted, though security practices may vary.'
+    };
+  }
+  
+  // Healthcare domains
+  if (lowerDomain.includes('hospital') || lowerDomain.includes('health') || 
+      lowerDomain.includes('medical') || lowerDomain.includes('clinic') ||
+      lowerDomain.endsWith('.nhs.uk')) {
+    return {
+      type: 'healthcare',
+      trustLevel: 'medium',
+      explanation: 'This appears to be a healthcare-related domain. Verify it belongs to a legitimate healthcare provider.'
+    };
+  }
+  
+  // Financial institutions (common patterns)
+  const financialKeywords = ['bank', 'credit', 'finance', 'insurance', 'invest'];
+  if (financialKeywords.some(keyword => lowerDomain.includes(keyword))) {
+    // Check if it's a known bank
+    const trustedBanks = ['chase.com', 'bankofamerica.com', 'wellsfargo.com', 'citibank.com', 
+                          'usbank.com', 'capitalone.com', 'ally.com', 'discover.com'];
+    if (trustedBanks.some(bank => lowerDomain === bank || lowerDomain.endsWith('.' + bank))) {
+      return {
+        type: 'financial',
+        trustLevel: 'high',
+        explanation: 'This is a recognized financial institution. Always verify the exact domain to avoid phishing.'
+      };
+    }
+    return {
+      type: 'financial',
+      trustLevel: 'low',
+      explanation: 'This appears to be a financial domain. Be extremely cautious and verify authenticity through official channels.'
+    };
+  }
+  
+  // Other trusted domains
+  const trustedDomains = [
+    'google.com', 'microsoft.com', 'apple.com', 'amazon.com', 'facebook.com',
+    'youtube.com', 'wikipedia.org', 'github.com', 'stackoverflow.com', 'mozilla.org'
+  ];
+  
+  if (trustedDomains.some(trusted => lowerDomain === trusted || lowerDomain.endsWith('.' + trusted))) {
+    return {
+      type: 'trusted',
+      trustLevel: 'high',
+      explanation: 'This is a well-known, trusted website.'
+    };
+  }
+  
+  return {
+    type: 'general',
+    trustLevel: 'low',
+    explanation: 'This is a general domain. Verify its legitimacy before sharing sensitive information.'
+  };
+}
+
+// Generate contextual score explanation
+function generateScoreExplanation(score: number, domainContext: any, checks: any): string {
+  const failedChecks = [];
+  const explanations = [];
+  
+  // Analyze which checks failed and why
+  if (!checks.patternAnalysis.passed) {
+    failedChecks.push('pattern analysis');
+    if (checks.patternAnalysis.reason?.includes('Typosquatting')) {
+      explanations.push('The domain appears to be mimicking a popular website');
+    } else if (checks.patternAnalysis.reason?.includes('URL shortener')) {
+      explanations.push('URL shorteners can hide the actual destination');
+    }
+  }
+  
+  if (!checks.sslCertificate.passed) {
+    failedChecks.push('SSL certificate');
+    explanations.push('The site lacks HTTPS encryption');
+  }
+  
+  if (!checks.domainReputation.passed) {
+    failedChecks.push('domain reputation');
+    if (checks.domainReputation.reason?.includes('Recently created')) {
+      explanations.push('The domain was created very recently');
+    }
+  }
+  
+  // Generate contextual explanation
+  if (domainContext.type === 'government' && score < 80) {
+    return `This government website scored ${score}/100. While government sites are inherently trusted, this one has technical issues: ${explanations.join(', ')}. Government sites often use older technology for stability, which can affect security scores. The site is still safe to use for official purposes.`;
+  } else if (domainContext.type === 'educational' && score < 80) {
+    return `This educational institution scored ${score}/100. Educational sites are generally trusted but may have: ${explanations.join(', ')}. The lower score reflects technical limitations rather than malicious intent.`;
+  } else if (score >= 80) {
+    return `This site scored ${score}/100, indicating good security practices. ${domainContext.explanation}`;
+  } else if (score >= 50) {
+    return `This site scored ${score}/100 due to: ${failedChecks.join(', ')}. ${explanations.join('. ')}. Exercise caution when sharing personal information.`;
+  } else {
+    return `This site scored only ${score}/100, indicating serious security concerns: ${failedChecks.join(', ')}. ${explanations.join('. ')}. Avoid visiting this site or sharing any information.`;
   }
 }
 
