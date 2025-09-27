@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RobotLogo } from "@/components/RobotLogo";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
@@ -424,7 +425,7 @@ const SecurityToolsHub = () => {
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
             <div className="p-4 rounded-full bg-primary/10 glow-primary">
-              <Shield className="h-12 w-12 text-primary" />
+              <RobotLogo size={64} className="text-primary" />
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">

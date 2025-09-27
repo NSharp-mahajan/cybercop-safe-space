@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, User, Shield } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { ResetPasswordModal } from "./ResetPasswordModal";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button, Input, Alert, AlertDescription, useAuth, useToast } from '@/lib/hooks';
 import { supabase } from "@/integrations/supabase/client";
+import { RobotLogo } from "@/components/RobotLogo";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -209,7 +210,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <DialogHeader>
           <div className="flex items-center justify-center mb-4">
             <div className="p-3 rounded-full bg-primary/10">
-              <Shield className="h-8 w-8 text-primary" />
+              <RobotLogo size={48} className="text-primary" />
             </div>
           </div>
           <DialogTitle className="text-center text-2xl">

@@ -22,6 +22,7 @@ import {
 import QuickScamReport from "@/components/QuickScamReport";
 import Robot from "@/components/Robot";
 import ChromeExtension from "@/components/ChromeExtensionSimple";
+import { RobotLogo } from "@/components/RobotLogo";
 
 const Landing = () => {
   const features = [
@@ -100,7 +101,7 @@ const Landing = () => {
                 </Button>
                 <Button size="lg" variant="outline" asChild className="transition-glow hover:glow-accent">
                   <Link to="/dashboard">
-                    <Shield className="mr-2 h-5 w-5" />
+                    <Eye className="mr-2 h-5 w-5" />
                     Security Dashboard
                   </Link>
                 </Button>
@@ -435,7 +436,7 @@ const Landing = () => {
             {/* Company Info */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-primary" />
+                <RobotLogo size={48} className="text-primary" />
                 <span className="text-2xl font-bold">CyberCop</span>
               </div>
               <p className="text-slate-300 leading-relaxed">

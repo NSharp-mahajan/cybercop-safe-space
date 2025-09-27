@@ -12,22 +12,22 @@ import {
 } from "@/components/ui/navigation-menu";
 import { 
   Menu, 
-  Shield, 
   FileText, 
   ScanText, 
   BookOpen, 
   BarChart3, 
-  HelpCircle,
-  MessageCircle,
-  AlertTriangle,
-  Users,
-  Search,
-  Home,
-  Newspaper,
-  KeyRound,
+  HelpCircle, 
+  MessageCircle, 
+  AlertTriangle, 
+  Users, 
+  Search, 
+  Home, 
+  Newspaper, 
+  KeyRound, 
   Phone
 } from "lucide-react";
 import { UserMenu } from "@/components/auth/UserMenu";
+import { RobotLogo } from "@/components/RobotLogo";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,7 +67,7 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 transition-all hover:scale-105">
-            <Shield className="h-8 w-8 text-primary" />
+            <RobotLogo size={48} className="text-primary" />
             <span className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">
               CyberCop
             </span>
