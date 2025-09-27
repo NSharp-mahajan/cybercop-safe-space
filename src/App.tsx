@@ -24,6 +24,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Subscription from "./pages/Subscription";
 import ProDashboard from "./pages/ProDashboard";
 import NotFound from "./pages/NotFound";
+import AuthTest from "./pages/AuthTest";
 import ChatWidget from "./components/ChatWidget";
 import DebugPanel from "./components/DebugPanel";
 
@@ -56,6 +57,7 @@ const App = () => {
               <Route path="subscription" element={<Subscription />} />
               <Route path="pro-dashboard" element={<ProDashboard />} />
               <Route path="help" element={<Help />} />
+              <Route path="auth-test" element={<AuthTest />} />
             </Route>
             {/* Auth routes (outside Layout) */}
             <Route path="/auth/callback" element={<AuthCallback />} />
