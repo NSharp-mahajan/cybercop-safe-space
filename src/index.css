@@ -423,6 +423,66 @@ All colors MUST be HSL.
     }
   }
 
+  /* Navigation Menu overflow prevention */
+  [data-radix-navigation-menu-content] {
+    max-width: 75vw !important;
+    max-height: 80vh !important;
+    overflow: auto;
+    right: 0 !important;
+    left: auto !important;
+  }
+
+  [data-radix-popper-content-wrapper] {
+    max-width: 75vw !important;
+    max-height: 80vh !important;
+  }
+
+  /* Ensure navigation menu doesn't overflow right edge */
+  [data-radix-navigation-menu-content][data-side="bottom"] {
+    transform: translateX(-50%) !important;
+  }
+
+  /* Navigation menu item text wrapping */
+  [data-radix-navigation-menu-content] p {
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+    white-space: normal;
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+
+  /* Make navigation menu items more compact */
+  [data-radix-navigation-menu-content] a {
+    padding: 0.5rem !important;
+    min-height: auto !important;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Ensure grid items don't overflow */
+  [data-radix-navigation-menu-content] .grid {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  [data-radix-navigation-menu-content] .grid > * {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Ensure proper text truncation for long descriptions */
+  [data-radix-navigation-menu-content] p {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .chat-widget-container,
