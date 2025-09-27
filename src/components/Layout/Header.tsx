@@ -92,7 +92,7 @@ const Header = () => {
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-sm font-medium">Security Tools</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="grid gap-3 p-6 w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                    <div className="grid gap-1 p-5 w-[220px] sm:w-[280px] lg:w-[350px] lg:grid-cols-[.75fr_1fr] max-w-[75vw]">
                       <div className="row-span-3">
                         <NavigationMenuLink asChild>
                           <Link
@@ -120,7 +120,7 @@ const Header = () => {
                                 <item.icon className="h-4 w-4" />
                                 {item.name}
                               </div>
-                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              <p className="text-sm leading-snug text-muted-foreground break-words hyphens-auto">
                                 {item.desc}
                               </p>
                             </Link>
@@ -134,7 +134,7 @@ const Header = () => {
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-sm font-medium">Resources</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <div className="grid w-[220px] gap-1 p-4 sm:w-[280px] md:w-[350px] md:grid-cols-2 lg:w-[450px] max-w-[75vw]">
                       {resources.map((item) => (
                         <NavigationMenuLink key={item.name} asChild>
                           <Link
@@ -145,7 +145,7 @@ const Header = () => {
                               <item.icon className="h-4 w-4" />
                               {item.name}
                             </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            <p className="text-sm leading-snug text-muted-foreground break-words hyphens-auto">
                               {item.desc}
                             </p>
                           </Link>
@@ -158,7 +158,7 @@ const Header = () => {
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-sm font-medium">Support</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <div className="grid w-[220px] gap-1 p-4 sm:w-[280px] md:w-[350px] md:grid-cols-2 lg:w-[450px] max-w-[75vw]">
                       {support.map((item) => (
                         <NavigationMenuLink key={item.name} asChild>
                           <Link
@@ -169,7 +169,7 @@ const Header = () => {
                               <item.icon className="h-4 w-4" />
                               {item.name}
                             </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            <p className="text-sm leading-snug text-muted-foreground break-words hyphens-auto">
                               {item.desc}
                             </p>
                           </Link>
