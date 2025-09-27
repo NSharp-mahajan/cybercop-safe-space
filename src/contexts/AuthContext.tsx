@@ -75,10 +75,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
             break;
           case 'SIGNED_OUT':
-            toast({
-              title: "Signed out",
-              description: "You have been signed out successfully.",
-            });
+            // Only show sign out message if there was previously a user
+            // This prevents showing the message during OAuth flows
+            if (user) {
+              toast({
+                title: "Signed out",
+                description: "You have been signed out successfully.",
+              });
+            }
             break;
           case 'TOKEN_REFRESHED':
             console.log('Token refreshed');

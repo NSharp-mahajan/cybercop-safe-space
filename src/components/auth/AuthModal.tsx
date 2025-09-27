@@ -179,6 +179,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
@@ -189,6 +193,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           variant: "destructive",
         });
       }
+      // Don't close the modal here - let the OAuth flow complete
     } catch (error: any) {
       toast({
         title: "Error",

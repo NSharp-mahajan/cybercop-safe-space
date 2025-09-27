@@ -11,13 +11,22 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // First, check if we have a hash fragment with tokens
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        
+        if (accessToken) {
+          // Wait a bit for Supabase to process the tokens
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Auth callback error:', error);
           toast({
             title: "Authentication Error",
-            description: "There was an error during authentication. Please try again.",
+            description: error.message || "There was an error during authentication. Please try again.",
             variant: "destructive",
           });
           navigate('/');
@@ -25,13 +34,15 @@ const AuthCallback = () => {
         }
 
         if (data.session) {
-          toast({
-            title: "Welcome!",
-            description: "You have been successfully signed in.",
-          });
+          // Session exists - user is authenticated
+          console.log('User authenticated:', data.session.user.email);
           // Redirect to dashboard or previous page
-          navigate('/dashboard');
+          const returnTo = localStorage.getItem('returnTo') || '/dashboard';
+          localStorage.removeItem('returnTo');
+          navigate(returnTo);
         } else {
+          // No session - might still be processing
+          console.log('No session found in callback');
           navigate('/');
         }
       } catch (error) {
