@@ -205,8 +205,8 @@ const ChatWidget = () => {
           </Button>
         </CardHeader>
       
-      <CardContent className="chat-content p-0 min-h-0" style={{ overflow: 'hidden', width: '100%' }}>
-        <div className="chat-messages chat-messages-container p-4 space-y-4" style={{ width: '100%', maxWidth: '100%', overflow: 'hidden auto', boxSizing: 'border-box' }}>
+      <CardContent className="chat-content p-0 min-h-0 flex flex-col" style={{ overflow: 'hidden', width: '100%' }}>
+        <div className="chat-messages chat-messages-container p-4 space-y-4 flex-1 overflow-y-auto" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
           {!chat?.messages?.length ? (
             <div className="bg-muted p-3 rounded-lg">
               <p className="text-sm text-muted-foreground">
@@ -243,7 +243,7 @@ const ChatWidget = () => {
             chat.messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full mb-4`}
                 style={{ maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}
               >
                 <div
@@ -254,13 +254,15 @@ const ChatWidget = () => {
                   }`}
                   style={{
                     maxWidth: '75%',
+                    minWidth: '60px',
+                    width: 'fit-content',
                     wordWrap: 'break-word',
                     overflowWrap: 'anywhere',
                     wordBreak: 'break-word',
                     whiteSpace: 'pre-wrap',
                     overflow: 'hidden',
                     boxSizing: 'border-box',
-                    width: 'fit-content'
+                    contain: 'layout style'
                   }}
                 >
                   <div
@@ -275,7 +277,8 @@ const ChatWidget = () => {
                       maxWidth: '100%',
                       boxSizing: 'border-box',
                       display: 'block',
-                      minWidth: 0
+                      minWidth: 0,
+                      hyphens: 'auto'
                     }}
                   >
                     {msg.message}

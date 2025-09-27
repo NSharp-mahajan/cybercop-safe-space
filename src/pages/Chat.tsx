@@ -166,8 +166,8 @@ const ChatPage = () => {
             </div>
           </CardHeader>
         
-          <CardContent className="flex-1 flex flex-col">
-            <div className="flex-1 overflow-y-auto space-y-4 mb-6 p-4">
+          <CardContent className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 overflow-y-auto space-y-4 mb-6 p-4" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
               {!chat?.messages?.length ? (
                 <div className="bg-slate-700/50 border border-cyan-500/20 rounded-xl p-6 text-center">
                   <div className="flex items-center justify-center gap-3 mb-4">
@@ -209,9 +209,10 @@ const ChatPage = () => {
               chat.messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full mb-4`}
+                  style={{ maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}
                 >
-                  <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className={`flex items-start gap-3 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`} style={{ width: 'fit-content', maxWidth: '100%' }}>
                     {/* Avatar */}
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                       msg.role === 'user' 
@@ -232,8 +233,37 @@ const ChatPage = () => {
                           ? 'bg-cyan-500 text-white'
                           : 'bg-slate-700/50 text-slate-100 border border-slate-600/50'
                       }`}
+                      style={{
+                        maxWidth: '100%',
+                        minWidth: '60px',
+                        width: 'fit-content',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
+                        whiteSpace: 'pre-wrap',
+                        overflow: 'hidden',
+                        boxSizing: 'border-box',
+                        contain: 'layout style'
+                      }}
                     >
-                      <div className="whitespace-pre-wrap text-sm">{msg.message}</div>
+                      <div 
+                        className="whitespace-pre-wrap text-sm"
+                        style={{
+                          wordWrap: 'break-word',
+                          overflowWrap: 'anywhere',
+                          wordBreak: 'break-word',
+                          whiteSpace: 'pre-wrap',
+                          overflow: 'hidden',
+                          width: '100%',
+                          maxWidth: '100%',
+                          boxSizing: 'border-box',
+                          display: 'block',
+                          minWidth: 0,
+                          hyphens: 'auto'
+                        }}
+                      >
+                        {msg.message}
+                      </div>
                       <div className={`text-xs mt-2 ${
                         msg.role === 'user' ? 'text-cyan-100' : 'text-slate-400'
                       }`}>
