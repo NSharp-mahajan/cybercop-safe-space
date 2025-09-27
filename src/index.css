@@ -651,3 +651,8 @@ All colors MUST be HSL.
 .award-winning-rotate {
   animation: rotate-border 8s linear infinite;
 }
+
+/* Subtle Scale Effect */
+.scale-102 {
+  transform: scale(1.02);
+}
